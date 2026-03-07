@@ -4,10 +4,10 @@
 
 This repository contains user scripts for browser extensions and does not follow traditional versioning. Security updates are applied to the current main branch as needed.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| main    | :white_check_mark: |
-| archived scripts | :x: |
+| Version          | Supported          |
+| ---------------- | ------------------ |
+| main             | :white_check_mark: |
+| archived scripts | :x:                |
 
 ## Reporting a Vulnerability
 
