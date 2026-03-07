@@ -24,7 +24,7 @@ A collection of user scripts for AdGuard, TamperMonkey, and ViolentMonkey to enh
   - [📥 Installation](#-installation)
     - [🌐 Browser Extensions](#-browser-extensions)
     - [🛡️ AdGuard Extension](#️-adguard-extension)
-    - [📱 AdGuard App](#️-adguard-app)
+    - [📱 AdGuard App (Desktop/Mobile)](#-adguard-app-desktopmobile)
   - [🎮 Usage](#-usage)
   - [🌐 Supported Sites](#-supported-sites)
 - [📜 License](#-license)
