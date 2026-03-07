@@ -269,7 +269,7 @@
     );
     location.reload();
   }
- 
+
   // Add styles for floating button and dropdown
   GM_addStyle(`
         #bypassContainer {
