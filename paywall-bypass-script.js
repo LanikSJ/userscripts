@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Paywall Bypass Script
 // @namespace    http://github.com/
-// @version      2.0.0
+// @version      2.0.1
 // @description  Mobile and desktop-friendly paywall bypass with dropdown menu and right-click options.
 // @author       sharmanhall and LanikSJ
 // @license      MIT
@@ -195,6 +195,7 @@
 // @match        *://*.theolivepress.es/*
 // @match        *://*.thesaturdaypaper.com.au/*
 // @match        *://*.thestar.com/*
+// @match        *://*.thestreet.com/*
 // @match        *://*.thewrap.com/*
 // @match        *://*.theguardian.com/*
 // @match        *://*.thejournal.ie/*
