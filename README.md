@@ -27,6 +27,7 @@ A collection of user scripts for AdGuard, TamperMonkey, and ViolentMonkey to enh
     - [📱 AdGuard App (Desktop/Mobile)](#-adguard-app-desktopmobile)
   - [🎮 Usage](#-usage)
   - [🌐 Supported Sites](#-supported-sites)
+- [🛠️ Scripts Directory](#️-scripts-directory)
 - [📜 License](#-license)
 - [🤝 Contributing](#-contributing)
 - [⚠️ Disclaimer](#️-disclaimer)
@@ -38,7 +39,7 @@ A comprehensive user script designed to help bypass paywalls on news websites by
 ### ✨ Features
 
 - **Floating Button Interface**: Mobile and desktop-friendly floating button with dropdown menu
-- **Multiple Archive Services**: Access to Archive.today, Archive.is, Archive.ph, Archive.org, and RemovePaywall
+- **Multiple Archive Services**: Access to Archive.today, Archive.is, Archive.ph,Archive.org, and RemovePaywall
 - **Right-Click Menu Integration**: Quick access through browser context menu
 - **Extensive Site Support**: Works with hundreds of news websites including:
   - Major publications (NY Times, Washington Post, The Guardian, etc.)
@@ -132,7 +133,8 @@ A comprehensive user script designed to help bypass paywalls on news websites by
    - Look for the floating button in the bottom-right corner
    - The script should be active and functional
 
-**Note:** The AdGuard app works system-wide and will apply the user script to all browsers on your device, while the browser extension only works in the specific browser where it's installed.
+**Note:** The AdGuard app works system-wide and will apply the user script to all browsers on your device, while the
+browser extension only works in the specific browser where it's installed.
 
 ### 🎮 Usage
 
@@ -156,8 +158,63 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### 🤝 Contributing
 
-Contributions are welcome! If you find additional sites that could be supported or have improvements to suggest, please submit a pull request.
+Contributions are welcome! If you find additional sites that could be supported or have improvements to suggest, please
+submit a pull request.
+
+### 🛠️ Scripts Directory
+
+The `/scripts/` directory contains utility tools for maintaining and validating the userscript:
+
+#### `domain_checker.py`
+
+A Python script that:
+
+- Extracts all domains from the `@match` section of the userscript
+- Validates domain accessibility by making HTTP requests
+- Reports which domains are alive, offline, or timing out
+- Helps identify broken or inaccessible domains in the filter list
+
+**Usage:**
+
+```bash
+cd LanikSJ/userscripts/scripts
+python3 domain_checker.py
+```
+
+#### `run_checker.sh`
+
+A shell script wrapper that:
+
+- Creates a Python virtual environment
+- Installs required dependencies from `requirements.txt`
+- Runs the domain checker script
+- Cleans up the virtual environment after execution
+- Provides a simple one-command solution for domain validation
+
+**Usage:**
+
+```bash
+cd LanikSJ/userscripts/scripts
+./run_checker.sh
+```
+
+#### `requirements.txt`
+
+Python dependencies required for the domain validation tools:
+
+- `requests`: For making HTTP requests to validate domains
+- `certifi`, `charset-normalizer`, `idna`, `urllib3`: Supporting libraries for HTTP functionality
+
+**Purpose:**
+
+These scripts help maintain the quality of the userscript by:
+
+- Identifying domains that are no longer accessible
+- Ensuring the filter list remains up-to-date
+- Providing automated validation before releases
+- Helping contributors verify their domain additions
 
 ### ⚠️ Disclaimer
 
-This script is intended for educational purposes and to access content that may be temporarily restricted. Please respect copyright and terms of service of content providers. Use at your own risk.
+This script is intended for educational purposes and to access content that may be temporarily restricted.
+Please respect copyright and terms of service of content providers. Use at your own risk.
