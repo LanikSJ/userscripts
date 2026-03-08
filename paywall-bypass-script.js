@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Paywall Bypass Script
 // @namespace    http://github.com/
-// @version      2.0.1
+// @version      2.0.2
 // @description  Mobile and desktop-friendly paywall bypass with dropdown menu and right-click options.
 // @author       sharmanhall and LanikSJ
 // @license      MIT
@@ -9,7 +9,6 @@
 // @match        *://*.adelaidenow.com.au/*
 // @match        *://*.adweek.com/*
 // @match        *://*.americanbanker.com/*
-// @match        *://*.ambito/*
 // @match        *://*.afr.com/*
 // @match        *://*.ampproject.org/*
 // @match        *://*.arstechnica.com/*
@@ -19,14 +18,12 @@
 // @match        *://*.bbc.co.uk/*
 // @match        *://*.bizjournals.com/*
 // @match        *://*.bloomberg.com/*
-// @match        *://*.bloombergquint.com/*
 // @match        *://*.bostonglobe.com/*
 // @match        *://*.brisbanetimes.com.au/*
 // @match        *://*.britannica.com/*
 // @match        *://*.businessinsider.com/*
 // @match        *://*.caixinglobal.com/*
 // @match        *://*.cbsnews.com/*
-// @match        *://*.cen.acs.org/*
 // @match        *://*.centralwesterndaily.com.au/*
 // @match        *://*.chicagobusiness.com/*
 // @match        *://*.chicagotribune.com/*
@@ -48,11 +45,10 @@
 // @match        *://*.dynamed.com/*
 // @match        *://*.economist.com/*
 // @match        *://*.elmercurio.com/*
+// @match        *://*.elpais.com/*
 // @match        *://*.elmundo.es/*
 // @match        *://*.elu24.ee/*
-// @match        *://*.english.elpais.com/*
 // @match        *://*.entertainment.ie/*
-// @match        *://*.entreprenal.com/*
 // @match        *://*.engadget.com/*
 // @match        *://*.examiner.com.au/*
 // @match        *://*.expansion.com/*
@@ -66,7 +62,6 @@
 // @match        *://*.fortune.com/*
 // @match        *://*.forbes.pl/*
 // @match        *://*.ft.com/*
-// @match        *://*.gelocal.it/*
 // @match        *://*.genomeweb.com/*
 // @match        *://*.glassdoor.com/*
 // @match        *://*.globes.co.il/*
@@ -95,7 +90,6 @@
 // @match        *://*.jalopnik.com/*
 // @match        *://*.jezebel.com/*
 // @match        *://*.journalnow.com/*
-// @match        *://*.kansascity.com/*
 // @match        *://*.kotaku.com/*
 // @match        *://*.labusinessjournal.com/*
 // @match        *://*.lanacion.com.ar/*
@@ -114,13 +108,11 @@
 // @match        *://*.medium.com/*
 // @match        *://*.medscape.com/*
 // @match        *://*.mercurynews.com/*
-// @match        *://*.motherboard.vice.com/*
 // @match        *://*.motherjones.com/*
 // @match        *://*.mv-voice.com/*
 // @match        *://*.nationalpost.com/*
 // @match        *://*.newstatesman.com/*
 // @match        *://*.newyorker.com/*
-// @match        *://*.newyorktimes.com/*
 // @match        *://*.nbcnews.com/*
 // @match        *://*.nrc.nl/*
 // @match        *://*.ntnews.com.au/*
@@ -132,21 +124,17 @@
 // @match        *://*.ocregister.com/*
 // @match        *://*.onet.pl/*
 // @match        *://*.orlandosentinel.com/*
-// @match        *://*.outbrain.com/*
 // @match        *://*.paloaltoonline.com/*
 // @match        *://*.parool.nl/*
 // @match        *://*.pagesix.com/*
 // @match        *://*.people.com/*
 // @match        *://*.pitchbook.com/*
-// @match        *://*.piano.io/*
 // @match        *://*.politico.com/*
-// @match        *://*.poool.fr/*
 // @match        *://*.postimees.ee/*
 // @match        *://*.propublica.org/*
 // @match        *://*.qiota.com/*
 // @match        *://*.qz.com/*
 // @match        *://*.repubblica.it/*
-// @match        *://*.republic.ru/*
 // @match        *://*.reuters.com/*
 // @match        *://*.rp-online.de/*
 // @match        *://*.rp.pl/*
@@ -161,7 +149,6 @@
 // @match        *://*.sofrep.com/*
 // @match        *://*.spectator.co.uk/*
 // @match        *://*.spectator.com.au/*
-// @match        *://*.spectator.us/*
 // @match        *://*.speld.nl/*
 // @match        *://*.spiegel.de/*
 // @match        *://*.startribune.com/*
@@ -184,6 +171,7 @@
 // @match        *://*.theathletic.com/*
 // @match        *://*.theatlantic.com/*
 // @match        *://*.theaustralian.com.au/*
+// @match        *://*.thedailybeast.com/*
 // @match        *://*.thediplomat.com/*
 // @match        *://*.theglobeandmail.com/*
 // @match        *://*.theherald.com.au/*
@@ -204,20 +192,6 @@
 // @match        *://*.tinypass.com/*
 // @match        *://*.towardsdatascience.com/*
 // @match        *://*.trouw.nl/*
-// @match        *://*.usatoday.com/*
-// @match        *://*.usmagazine.com/*
-// @match        *://*.vanityfair.com/*
-// @match        *://*.vox.com/*
-// @match        *://*.vn.nl/*
-// @match        *://*.volkskrant.nl/*
-// @match        *://*.washingtonpost.com/*
-// @match        *://*.welt.de/*
-// @match        *://*.wired.com/*
-// @match        *://*.wz.de/*
-// @match        *://*.wsj.com/*
-// @match        *://*.wyborcza.pl/*
-// @match        *://*.zeit.de/*
-// @match        *://*.elpais.com/*
 // @grant        GM_registerMenuCommand
 // @grant        GM_addStyle
 // @grant        GM_addElement
