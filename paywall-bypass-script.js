@@ -1,8 +1,11 @@
 // ==UserScript==
-// @name         Paywall Bypass Script
+// @name         Paywall Bypass
 // @namespace    http://github.com/
-// @version      2.0.2
+// @version      2.0.3
 // @description  Mobile and desktop-friendly paywall bypass with dropdown menu and right-click options.
+// @downloadURL  https://raw.githubusercontent.com/LanikSJ/userscripts/main/paywall-bypass-script.js
+// @updateURL    https://raw.githubusercontent.com/LanikSJ/userscripts/main/paywall-bypass-script.js
+// @homepageURL  https://laniksj.github.io/userscripts
 // @author       sharmanhall and LanikSJ
 // @license      MIT
 // @icon         data:image/png;base64,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
@@ -192,6 +195,7 @@
 // @match        *://*.tinypass.com/*
 // @match        *://*.towardsdatascience.com/*
 // @match        *://*.trouw.nl/*
+// @match        *://*.wsj.com/*
 // @grant        GM_registerMenuCommand
 // @grant        GM_addStyle
 // @grant        GM_addElement
