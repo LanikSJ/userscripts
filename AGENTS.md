@@ -1,4 +1,4 @@
-# AI Rules & Project Standards for userscripts
+# Agent Rules & Project Standards for userscripts
 
 ## Repository Overview
 
