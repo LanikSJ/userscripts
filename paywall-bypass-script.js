@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Paywall Bypass
 // @namespace    http://github.com/
-// @version      2.0.3
+// @version      2.0.4
 // @description  Mobile and desktop-friendly paywall bypass with dropdown menu and right-click options.
 // @downloadURL  https://raw.githubusercontent.com/LanikSJ/userscripts/main/paywall-bypass-script.js
 // @updateURL    https://raw.githubusercontent.com/LanikSJ/userscripts/main/paywall-bypass-script.js
@@ -63,6 +63,7 @@
 // @match        *://*.faz.net/*
 // @match        *://*.foreignpolicy.com/*
 // @match        *://*.fortune.com/*
+// @match        *://fortune.com/*
 // @match        *://*.forbes.pl/*
 // @match        *://*.ft.com/*
 // @match        *://*.genomeweb.com/*
@@ -242,8 +243,7 @@
 
     // Show notification
     alert(
-      `Floating button ${
-        showFloatingButton ? "enabled" : "disabled"
+      `Floating button ${showFloatingButton ? "enabled" : "disabled"
       }. Refresh the page for the change to take effect.`,
     );
     location.reload();
