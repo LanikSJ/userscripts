@@ -30,9 +30,8 @@
 // ==/UserScript==
 
 // shorthands
-const $$ = (a, b) => (b || document.body).querySelectorAll(a);
-const $c = (a, b) => (b || document.body).getElementsByClassName(a);
-const $t = (a, b) => (b || document.body).getElementsByTagName(a);
+function $$(a, b) { return (b || document.body).querySelectorAll(a); }
+function $c(a, b) { return (b || document.body).getElementsByClassName(a); }
 
 const loc = location.hostname;
 
