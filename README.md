@@ -162,7 +162,7 @@ The script supports paywall bypass for hundreds of news websites across the glob
 
 ## 💬 phpBB Forum Helper
 
-A user script that enhances phpBB forums running the ProSilver style. Current version: `1.2.0.260915`.
+A user script that enhances phpBB forums running the ProSilver style. Current version: `1.2.4.260915`.
 
 [![Install Script](https://img.shields.io/badge/Install-phpBB%20Forum%20Helper-blue?style=for-the-badge&logo=greasyfork)](https://raw.githubusercontent.com/LanikSJ/userscripts/main/php-forum-helper.js)
 

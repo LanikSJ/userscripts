@@ -2,7 +2,7 @@
 // @name         [LanikSJ] phpBB Forum Helper
 // @namespace    grom & LanikSJ
 // @description  phpBB: view user's posts and topics; removes ads and hidden metadata.
-// @version      1.2.3.260915
+// @version      1.2.4.260915
 ////          ProSilver          \\\\
 // @match        *://adblockplus.org/forum/*
 // @match        *://custombuttons.sourceforge.net/forum/*
@@ -94,47 +94,51 @@ for (const profile of $c('postprofile')) {
   }
 }
 
-// extension config fields: our key -> global suffix ('pcgfAJAXRegistrationCheck' + suffix)
-const CFG_FIELDS = {
-  usernameMin: 'UsernameMin',
-  usernameMax: 'UsernameMax',
-  usernameRule: 'UsernameRule',
-  usernameInvalid: 'UsernameInvalidBoundaries',
-  usernameLink: 'UsernameCheckLink',
-  emailRule: 'EMailRule',
-  emailInvalid: 'EMailInvalid',
-  emailLink: 'EMailCheckLink',
-  passwordMin: 'PasswordMin',
-  passwordRule: 'PasswordRule',
-  passwordInvalid: 'PasswordInvalid',
-  passwordValid: 'PasswordValid',
-  confirmValid: 'ConfirmPasswordValid',
-  confirmInvalid: 'ConfirmPasswordInvalid',
-  strengthLabel: 'PasswordStrength',
-  veryWeak: 'PasswordVeryWeak',
-  weak: 'PasswordWeak',
-  normal: 'PasswordNormal',
-  strong: 'PasswordStrong',
-  veryStrong: 'PasswordVeryStrong',
-  loading: 'Loading'
-};
+// read the AJAX registration check extension's config globals.
+// every access uses a static name (no dynamic member lookup).
+function readExtConfig() {
+  return {
+    usernameMin: window.pcgfAJAXRegistrationCheckUsernameMin,
+    usernameMax: window.pcgfAJAXRegistrationCheckUsernameMax,
+    usernameRule: window.pcgfAJAXRegistrationCheckUsernameRule,
+    usernameInvalid: window.pcgfAJAXRegistrationCheckUsernameInvalidBoundaries,
+    usernameLink: window.pcgfAJAXRegistrationCheckUsernameCheckLink,
+    emailRule: window.pcgfAJAXRegistrationCheckEMailRule,
+    emailInvalid: window.pcgfAJAXRegistrationCheckEMailInvalid,
+    emailLink: window.pcgfAJAXRegistrationCheckEMailCheckLink,
+    passwordMin: window.pcgfAJAXRegistrationCheckPasswordMin,
+    passwordRule: window.pcgfAJAXRegistrationCheckPasswordRule,
+    passwordInvalid: window.pcgfAJAXRegistrationCheckPasswordInvalid,
+    passwordValid: window.pcgfAJAXRegistrationCheckPasswordValid,
+    confirmValid: window.pcgfAJAXRegistrationCheckConfirmPasswordValid,
+    confirmInvalid: window.pcgfAJAXRegistrationCheckConfirmPasswordInvalid,
+    strengthLabel: window.pcgfAJAXRegistrationCheckPasswordStrength,
+    veryWeak: window.pcgfAJAXRegistrationCheckPasswordVeryWeak,
+    weak: window.pcgfAJAXRegistrationCheckPasswordWeak,
+    normal: window.pcgfAJAXRegistrationCheckPasswordNormal,
+    strong: window.pcgfAJAXRegistrationCheckPasswordStrong,
+    veryStrong: window.pcgfAJAXRegistrationCheckPasswordVeryStrong,
+    loading: window.pcgfAJAXRegistrationCheckLoading
+  };
+}
 
-// Prebuilt literal regexes only — no dynamic RegExp compilation (avoids ReDoS scanner findings).
-const PREBUILT_RULES = {
-  '.+': /^.+$/i,
-  '.*': /^.*$/i,
-  '[a-zA-Z0-9_ -]+': /^[a-zA-Z0-9_ -]+$/i,
-  '^[a-zA-Z0-9_-]+$': /^[a-zA-Z0-9_-]+$/i,
-  '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$': /^[^\s@]+@[^\s@]+\.[^\s@]+$/i
-};
+// literal regexes only (no dynamic RegExp compilation); the configured rule is
+// compared by equality, so there is never a variable-key lookup into a rule table
 const SAFE_USERNAME_RE = /^[\p{L}\p{N}_.\- ]+$/u;
 const SAFE_EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/i;
+
+function pickUsernameRule(configured) {
+  if (configured === '.+') return /^.+$/i;
+  if (configured === '.*') return /^.*$/i;
+  if (configured === '[a-zA-Z0-9_ -]+') return /^[a-zA-Z0-9_ -]+$/i;
+  if (configured === '^[a-zA-Z0-9_-]+$') return /^[a-zA-Z0-9_-]+$/i;
+  return SAFE_USERNAME_RE;
+}
 
 // AJAX registration check (cleaned from the pcgf/ajaxregistrationcheck extension);
 // a no-op unless the page provides the extension's config globals (e.g. UCP register).
 function initAJAXRegistrationCheck($) {
-  const cfg = {};
-  for (const [key, suffix] of Object.entries(CFG_FIELDS)) cfg[key] = window['pcgfAJAXRegistrationCheck' + suffix];
+  const cfg = readExtConfig();
   if (Object.values(cfg).some(v => typeof v === 'undefined')) return false; // config not ready yet
 
   const msg = {
@@ -144,13 +148,10 @@ function initAJAXRegistrationCheck($) {
     confirmPassword: $('#pcgf-ajaxregistrationcheck-confirm-password')
   };
   const EVENTS = 'input keyup change blur';
-  const usernameRE = PREBUILT_RULES[cfg.usernameRule] || SAFE_USERNAME_RE;
-  const emailRE = PREBUILT_RULES[cfg.emailRule] || SAFE_EMAIL_RE;
-  if (cfg.usernameRule && !PREBUILT_RULES[cfg.usernameRule]) {
+  const usernameRE = pickUsernameRule(cfg.usernameRule);
+  const emailRE = SAFE_EMAIL_RE;
+  if (cfg.usernameRule && usernameRE === SAFE_USERNAME_RE) {
     console.warn('[phpBB Forum Helper] Custom username rule not in safe list; using permissive default.');
-  }
-  if (cfg.emailRule && !PREBUILT_RULES[cfg.emailRule]) {
-    console.warn('[phpBB Forum Helper] Custom e-mail rule not in safe list; using default.');
   }
 
   const getField = (selector, name) => ($(selector).length ? $(selector) : $(`[name="${name}"]`)).first();
