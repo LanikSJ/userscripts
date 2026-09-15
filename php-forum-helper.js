@@ -2,7 +2,7 @@
 // @name         [LanikSJ] phpBB Forum Helper
 // @namespace    grom & LanikSJ
 // @description  phpBB: view user's posts and topics; removes ads and hidden metadata.
-// @version      1.2.0.260915
+// @version      1.2.1.260915
 ////          ProSilver          \\\\
 // @match        *://adblockplus.org/forum/*
 // @match        *://custombuttons.sourceforge.net/forum/*
@@ -132,8 +132,17 @@ function initAJAXRegistrationCheck($) {
   const EVENTS = 'input keyup change blur';
   let usernameRE = /^.+$/i;
   let emailRE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/i;
-  try { if (cfg.usernameRule) usernameRE = new RegExp(cfg.usernameRule, 'i'); } catch (e) { /* keep default */ }
-  try { if (cfg.emailRule) emailRE = new RegExp(cfg.emailRule, 'i'); } catch (e) { /* keep default */ }
+  // values come from the board's own admin-configured inline script (not user input);
+  // length-capped and compiled in try/catch, so a bad/oversized pattern just falls back
+  // to the safe default above.
+  if (typeof cfg.usernameRule === 'string' && cfg.usernameRule.length <= 200) {
+    // eslint-disable-next-line security/detect-non-literal-regexp
+    try { usernameRE = new RegExp(cfg.usernameRule, 'i'); } catch (e) { /* keep default */ }
+  }
+  if (typeof cfg.emailRule === 'string' && cfg.emailRule.length <= 200) {
+    // eslint-disable-next-line security/detect-non-literal-regexp
+    try { emailRE = new RegExp(cfg.emailRule, 'i'); } catch (e) { /* keep default */ }
+  }
 
   const getField = (selector, name) => ($(selector).length ? $(selector) : $(`[name="${name}"]`)).first();
 
@@ -149,9 +158,14 @@ function initAJAXRegistrationCheck($) {
     setValidity(field, '');
   };
   const setLoading = (message, messageField, field) => {
-    const circles = Array.from({length: 12}, (_, i) => `<div class="circle${i + 1} circle"></div>`).join('');
-    messageField.removeClass('invalid valid password-strength')
-      .html(`<div class="loading-circle">${circles}</div>&nbsp;&nbsp;&nbsp;${message}`);
+    const circles = document.createElement('div');
+    circles.className = 'loading-circle';
+    for (let i = 1; i <= 12; i++) {
+      const circle = document.createElement('div');
+      circle.className = `circle${i} circle`;
+      circles.appendChild(circle);
+    }
+    messageField.removeClass('invalid valid password-strength').empty().append(circles, document.createTextNode('\u00A0\u00A0\u00A0' + message));
     setValidity(field, '');
   };
   return {cfg, msg, EVENTS, usernameRE, emailRE, getField, setValidity, setInvalid, setValid, setLoading};
@@ -231,11 +245,20 @@ function bindAJAXRegistrationCheck($) {
     }
 
     if (!$('#pcgf-ajaxregistrationcheck-security').length || !$('#pcgf-ajaxregistrationcheck-strength').length) {
-      msg.password.removeClass('invalid valid').addClass('password-strength').html(
-        `<span class="pcgf-ajaxregistrationcheck-strength-label">${cfg.strengthLabel} </span>` +
-        '<div class="progressbar"><div id="pcgf-ajaxregistrationcheck-security">&nbsp;</div></div>' +
-        '<span id="pcgf-ajaxregistrationcheck-strength" class="pcgf-ajaxregistrationcheck-strength-text"></span>'
-      );
+      // built with DOM APIs (textContent) so config values are never parsed as HTML
+      const label = document.createElement('span');
+      label.className = 'pcgf-ajaxregistrationcheck-strength-label';
+      label.textContent = cfg.strengthLabel + ' ';
+      const bar = document.createElement('div');
+      bar.className = 'progressbar';
+      const fill = document.createElement('div');
+      fill.id = 'pcgf-ajaxregistrationcheck-security';
+      fill.textContent = '\u00A0';
+      bar.appendChild(fill);
+      const text = document.createElement('span');
+      text.id = 'pcgf-ajaxregistrationcheck-strength';
+      text.className = 'pcgf-ajaxregistrationcheck-strength-text';
+      msg.password.removeClass('invalid valid').addClass('password-strength').empty().append(label, bar, text);
     }
 
     const bar = $('#pcgf-ajaxregistrationcheck-security');
