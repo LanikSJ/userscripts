@@ -2,7 +2,7 @@
 // @name         [LanikSJ] phpBB Forum Helper
 // @namespace    grom & LanikSJ
 // @description  phpBB: view user's posts and topics; removes ads and hidden metadata.
-// @version      1.0.7.260915
+// @version      1.0.8.260915
 ////          ProSilver          \\\\
 // @match        *://adblockplus.org/forum/*
 // @match        *://custombuttons.sourceforge.net/forum/*
@@ -76,19 +76,8 @@ if (list) {
     user = $t('a', list[i])[0];
     if (!user) { continue; } // where registration not required
     user = user.href.match(/\d+/)[0];
-    // find dd lines: contact, posts count, reputation
-    var pc = list[i].querySelector('dd.profile-posts'),
-      rep = list[i].querySelector('dd.profile-reputation, dd[class*="reputation"]'),
-      contact = list[i].querySelector('dd.profile-contact'),
-      dds = $t('dd', list[i]),
-      dd;
-    for (var j = 0; j < dds.length; j++) {
-      dd = dds[j].textContent;
-      if (!pc && dd.match(/^\s*Posts:/)) pc = dds[j];
-      if (!rep && dd.match(/^\s*Reputation:/i)) rep = dds[j];
-    }
-    // anchor: below contact if present, else below reputation/posts, else end of profile
-    var anchor = contact || rep || pc;
+    // anchor: below the contact row, else below the post count, else end of profile
+    var anchor = list[i].querySelector('dd.profile-contact') || list[i].querySelector('dd.profile-posts');
     if (anchor) {
       if (anchor.nextSibling) {
         anchor.parentNode.insertBefore(mkLink('post', user), anchor.nextSibling);
