@@ -203,28 +203,28 @@ or download [`php-forum-helper.js`](php-forum-helper.js) for manual import.
 
 All matched forums run the ProSilver style:
 
-| Forum | URL |
-| --- | --- |
-| AdBlock Plus | `adblockplus.org/forum` |
-| Custom Buttons | `custombuttons.sourceforge.net/forum` |
-| Folding Forum | `foldingforum.org` |
-| Debian Forums | `forums.debian.net` |
-| InformAction | `forums.informaction.com` |
-| Lanik Forums | `forums.lanik.us` |
-| Linux Mint Community | `forums.linuxmint.com` |
-| Sandboxie | `forums.sandboxie.com` |
-| VirtualBox | `forums.virtualbox.org` |
-| Battle for Wesnoth | `forums.wesnoth.org` |
-| xkcd | `forums.xkcd.com` |
-| Enjoy Sudoku | `forum.enjoysudoku.com` |
-| FreeGameDev | `forum.freegamedev.net` |
-| OpenOffice | `forum.openoffice.org` |
-| Pale Moon | `forum.palemoon.org` |
-| VideoLAN | `forum.videolan.org` |
-| IBDOF | `ibdof.com` |
-| XnView | `newsgroup.xnview.com` |
-| Sublime Text | `www.sublimetext.com/forum` |
-| Synthesia | `*.synthesiagame.com/forum` |
+| Forum                | URL                                   |
+| -------------------- | ------------------------------------- |
+| AdBlock Plus         | `adblockplus.org/forum`               |
+| Custom Buttons       | `custombuttons.sourceforge.net/forum` |
+| Folding Forum        | `foldingforum.org`                    |
+| Debian Forums        | `forums.debian.net`                   |
+| InformAction         | `forums.informaction.com`             |
+| Lanik Forums         | `forums.lanik.us`                     |
+| Linux Mint Community | `forums.linuxmint.com`                |
+| Sandboxie            | `forums.sandboxie.com`                |
+| VirtualBox           | `forums.virtualbox.org`               |
+| Battle for Wesnoth   | `forums.wesnoth.org`                  |
+| xkcd                 | `forums.xkcd.com`                     |
+| Enjoy Sudoku         | `forum.enjoysudoku.com`               |
+| FreeGameDev          | `forum.freegamedev.net`               |
+| OpenOffice           | `forum.openoffice.org`                |
+| Pale Moon            | `forum.palemoon.org`                  |
+| VideoLAN             | `forum.videolan.org`                  |
+| IBDOF                | `ibdof.com`                           |
+| XnView               | `newsgroup.xnview.com`                |
+| Sublime Text         | `www.sublimetext.com/forum`           |
+| Synthesia            | `*.synthesiagame.com/forum`           |
 
 ### 📜 License
 
