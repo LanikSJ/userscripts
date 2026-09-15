@@ -1,12 +1,11 @@
 // ==UserScript==
 // @name         [LanikSJ] phpBB Forum Helper
 // @namespace    grom & LanikSJ
-// @description  phpBB: view user's posts and topics; cleans (tab) titles; removes ads and hidden metadata.
-// @version      1.0.6.260915
+// @description  phpBB: view user's posts and topics; removes ads and hidden metadata.
+// @version      1.0.7.260915
 ////          ProSilver          \\\\
 // @match        *://adblockplus.org/forum/*
 // @match        *://custombuttons.sourceforge.net/forum/*
-// @match        *://forums.mozillazine.org/*
 // @match        *://foldingforum.org/*
 // @match        *://forums.debian.net/*
 // @match        *://forums.informaction.com/*
@@ -39,13 +38,7 @@ function $t(a, b) { return (b || document.body).getElementsByTagName(a); }
 //function $n(a,b) { return (b||document.body).getElementsByName(a); }
 //var $body = document.body;
 
-// trim title
 var loc = location.hostname;
-if (loc.match('adblockplus|custombuttons|foldingforum|debian|informaction|lanik.us|linuxmint|sandboxie|virtualbox|wesnoth|xkcd\.com|palemoon|ibdof\.com|xnview\.com|sublimetext|synthesiagame'))
-  document.title = document.title.replace(/^[a-zA-Z\s\.-]+• (?:View topic - |View forum - )?/, '');
-else if (loc.match('freegamedev')) document.title = document.title.replace(/(?:Topic - |Forum - )?(.*) • FreeGameDev Forums - Open Source Game Development/, '$1');
-else if (loc.match('mozillazine')) document.title = document.title.replace(' • mozillaZine Forums', '');
-else if (loc.match('videolan')) document.title = document.title.replace(' - The VideoLAN Forums', '');
 
 // if on Custom Buttons forum
 if (loc.match('custombuttons.sourceforge.net')) {
