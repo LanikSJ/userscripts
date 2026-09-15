@@ -162,7 +162,7 @@ The script supports paywall bypass for hundreds of news websites across the glob
 
 ## 💬 phpBB Forum Helper
 
-A user script that enhances phpBB forums running the ProSilver style. Current version: `1.2.4.260915`.
+A user script that enhances phpBB forums running the ProSilver style. Current version: `1.2.5.260915`.
 
 [![Install Script](https://img.shields.io/badge/Install-phpBB%20Forum%20Helper-blue?style=for-the-badge&logo=greasyfork)](https://raw.githubusercontent.com/LanikSJ/userscripts/main/php-forum-helper.js)
 
@@ -176,10 +176,6 @@ or download [`php-forum-helper.js`](php-forum-helper.js) for manual import.
   `search.php` filtered by that author.
 - **Clickable Rows**: Makes entire forum and topic list rows (`.row`) clickable — clicking anywhere opens the
   forum/topic title link, while middle-click still performs the browser's native behavior.
-- **AJAX Registration Check**: On phpBB boards with the
-  [PCGF AJAX Registration Check](https://github.com/LanikSJ/phpBB-AJAX-Registration-Check) extension installed, provides
-  live username availability and e-mail validation, password rule checking, an animated password-strength meter, and a
-  submit guard on the registration form. Silently does nothing on boards without the extension.
 - **Ad & Metadata Removal**: Removes injected ad containers (`#gootop`, `#goobot`, `.adsbygoogle`) and hidden
   metadata (`description`, `keywords`, `copyright` meta tags).
 - **Favicon Fix**: Restores the favicon on the Custom Buttons forum.
