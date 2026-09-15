@@ -2,7 +2,7 @@
 // @name         [LanikSJ] phpBB Forum Helper
 // @namespace    grom & LanikSJ
 // @description  phpBB: view user's posts and topics; removes ads and hidden metadata.
-// @version      1.1.2.260915
+// @version      1.2.0.260915
 ////          ProSilver          \\\\
 // @match        *://adblockplus.org/forum/*
 // @match        *://custombuttons.sourceforge.net/forum/*
@@ -93,3 +93,224 @@ for (const profile of $c('postprofile')) {
     profile.append(post, topic);
   }
 }
+
+// AJAX registration check (cleaned from the pcgf/ajaxregistrationcheck extension);
+// a no-op unless the page provides the extension's config globals (e.g. UCP register).
+function initAJAXRegistrationCheck($) {
+  const ext = 'pcgfAJAXRegistrationCheck';
+  const cfg = {
+    usernameMin: window[ext + 'UsernameMin'],
+    usernameMax: window[ext + 'UsernameMax'],
+    usernameRule: window[ext + 'UsernameRule'],
+    usernameInvalid: window[ext + 'UsernameInvalidBoundaries'],
+    usernameLink: window[ext + 'UsernameCheckLink'],
+    emailRule: window[ext + 'EMailRule'],
+    emailInvalid: window[ext + 'EMailInvalid'],
+    emailLink: window[ext + 'EMailCheckLink'],
+    passwordMin: window[ext + 'PasswordMin'],
+    passwordRule: window[ext + 'PasswordRule'],
+    passwordInvalid: window[ext + 'PasswordInvalid'],
+    passwordValid: window[ext + 'PasswordValid'],
+    confirmValid: window[ext + 'ConfirmPasswordValid'],
+    confirmInvalid: window[ext + 'ConfirmPasswordInvalid'],
+    strengthLabel: window[ext + 'PasswordStrength'],
+    veryWeak: window[ext + 'PasswordVeryWeak'],
+    weak: window[ext + 'PasswordWeak'],
+    normal: window[ext + 'PasswordNormal'],
+    strong: window[ext + 'PasswordStrong'],
+    veryStrong: window[ext + 'PasswordVeryStrong'],
+    loading: window[ext + 'Loading']
+  };
+  if (Object.values(cfg).some(v => typeof v === 'undefined')) return false; // config not ready yet
+
+  const msg = {
+    username: $('#pcgf-ajaxregistrationcheck-username'),
+    email: $('#pcgf-ajaxregistrationcheck-email'),
+    password: $('#pcgf-ajaxregistrationcheck-password'),
+    confirmPassword: $('#pcgf-ajaxregistrationcheck-confirm-password')
+  };
+  const EVENTS = 'input keyup change blur';
+  let usernameRE = /^.+$/i;
+  let emailRE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/i;
+  try { if (cfg.usernameRule) usernameRE = new RegExp(cfg.usernameRule, 'i'); } catch (e) { /* keep default */ }
+  try { if (cfg.emailRule) emailRE = new RegExp(cfg.emailRule, 'i'); } catch (e) { /* keep default */ }
+
+  const getField = (selector, name) => ($(selector).length ? $(selector) : $(`[name="${name}"]`)).first();
+
+  const setValidity = (field, message) => {
+    if (field.length && field[0].setCustomValidity) field[0].setCustomValidity(message);
+  };
+  const setInvalid = (message, messageField, field) => {
+    messageField.removeClass('valid password-strength').addClass('invalid').text(message);
+    setValidity(field, message);
+  };
+  const setValid = (message, messageField, field) => {
+    messageField.removeClass('invalid password-strength').addClass('valid').text(message);
+    setValidity(field, '');
+  };
+  const setLoading = (message, messageField, field) => {
+    const circles = Array.from({length: 12}, (_, i) => `<div class="circle${i + 1} circle"></div>`).join('');
+    messageField.removeClass('invalid valid password-strength')
+      .html(`<div class="loading-circle">${circles}</div>&nbsp;&nbsp;&nbsp;${message}`);
+    setValidity(field, '');
+  };
+  return {cfg, msg, EVENTS, usernameRE, emailRE, getField, setValidity, setInvalid, setValid, setLoading};
+}
+
+// bind all fields, shared server-side check lives here too
+function bindAJAXRegistrationCheck($) {
+  const c = initAJAXRegistrationCheck($);
+  if (!c) return false;
+  const {cfg, msg, EVENTS, usernameRE, emailRE, getField, setInvalid, setValid, setLoading} = c;
+
+  // shared server-side check for username/e-mail
+  function serverCheck(value, messageField, checkLink, inputField) {
+    setLoading(cfg.loading, messageField, inputField);
+    $.ajax({
+      url: checkLink,
+      type: 'POST',
+      dataType: 'json',
+      headers: {'X-Requested-With': 'XMLHttpRequest'},
+      data: {search: value, ajax: 1},
+      success: result => {
+        (result[0] === 'OK' ? setValid : setInvalid)(result[1], messageField, inputField);
+      },
+      error: () => setInvalid(cfg.loading, messageField, inputField)
+    });
+  }
+
+  function validateConfirmPassword(passwordField, confirmField) {
+    if (!confirmField.length || !passwordField.length) return;
+    if (confirmField.val() === passwordField.val()) {
+      setValid(cfg.confirmValid, msg.confirmPassword, confirmField);
+    } else {
+      setInvalid(cfg.confirmInvalid, msg.confirmPassword, confirmField);
+    }
+  }
+
+  function validatePassword(passwordField, confirmField) {
+    if (!passwordField.length) return;
+    validateConfirmPassword(passwordField, confirmField);
+
+    const value = passwordField.val();
+    const lower = value.match(/[a-z]/g);
+    const upper = value.match(/[A-Z]/g);
+    const number = value.match(/[0-9]/g);
+    const symbol = value.match(/[^a-zA-Z0-9]/g);
+    let valid = false;
+
+    if (value.length < cfg.passwordMin) {
+      setInvalid(cfg.passwordInvalid, msg.password, passwordField);
+    } else if (cfg.passwordRule <= 0) {
+      valid = true;
+    } else if (lower && upper) {
+      if (cfg.passwordRule <= 10 || (number && (cfg.passwordRule <= 100 || symbol))) {
+        valid = true;
+      } else {
+        setInvalid(cfg.passwordInvalid, msg.password, passwordField);
+      }
+    } else {
+      setInvalid(cfg.passwordInvalid, msg.password, passwordField);
+    }
+    if (!valid) return;
+
+    setValid(cfg.passwordValid, msg.password, passwordField);
+
+    // strength meter percentage
+    let percentage = 0;
+    if (lower) percentage += Math.min(lower.length, 5) * 5;
+    if (upper) percentage += Math.min(upper.length, 3) * 7;
+    if (number) percentage += Math.min(number.length, 2) * 10;
+    if (symbol) percentage += Math.min(symbol.length, 2) * 14;
+
+    const username = getField('#username', 'username');
+    const email = getField('#email', 'email');
+    if ((username.val() === '' || value.indexOf(username.val()) < 0) &&
+        (email.val() === '' || value.indexOf(email.val()) < 0)) {
+      percentage += 6;
+    }
+
+    if (!$('#pcgf-ajaxregistrationcheck-security').length || !$('#pcgf-ajaxregistrationcheck-strength').length) {
+      msg.password.removeClass('invalid valid').addClass('password-strength').html(
+        `<span class="pcgf-ajaxregistrationcheck-strength-label">${cfg.strengthLabel} </span>` +
+        '<div class="progressbar"><div id="pcgf-ajaxregistrationcheck-security">&nbsp;</div></div>' +
+        '<span id="pcgf-ajaxregistrationcheck-strength" class="pcgf-ajaxregistrationcheck-strength-text"></span>'
+      );
+    }
+
+    const bar = $('#pcgf-ajaxregistrationcheck-security');
+    const text = $('#pcgf-ajaxregistrationcheck-strength');
+    bar.stop().animate({width: percentage + '%'}, 800);
+
+    const levels = [
+      [95, cfg.veryStrong, 'very-strong'],
+      [85, cfg.strong, 'strong'],
+      [60, cfg.normal, 'normal'],
+      [45, cfg.weak, 'weak']
+    ];
+    for (const [min, label, css] of levels) {
+      if (percentage >= min) {
+        text.text(label);
+        bar.removeClass().addClass(css);
+        return;
+      }
+    }
+    text.text(cfg.veryWeak);
+    bar.removeClass().addClass('very-weak');
+  }
+
+  const usernameField = getField('#username', 'username');
+  const emailField = getField('#email', 'email');
+  const passwordField = getField('#new_password', 'new_password');
+  const confirmField = getField('#password_confirm', 'password_confirm');
+
+  if (confirmField.length) {
+    msg.confirmPassword.insertAfter(confirmField);
+    confirmField.on(EVENTS, () => validateConfirmPassword(passwordField, confirmField));
+  }
+  if (passwordField.length) {
+    msg.password.insertAfter(passwordField);
+    passwordField.on(EVENTS, () => validatePassword(passwordField, confirmField));
+    validatePassword(passwordField, confirmField);
+  }
+  if (usernameField.length) {
+    msg.username.insertAfter(usernameField);
+    usernameField.on(EVENTS, () => {
+      if (passwordField.length) validatePassword(passwordField, confirmField);
+      const value = usernameField.val();
+      if (value.length < cfg.usernameMin || value.length > cfg.usernameMax || !value.match(usernameRE)) {
+        setInvalid(cfg.usernameInvalid, msg.username, usernameField);
+        return;
+      }
+      serverCheck(value, msg.username, cfg.usernameLink, usernameField);
+    });
+    usernameField.triggerHandler('input');
+  }
+  if (emailField.length) {
+    msg.email.insertAfter(emailField);
+    emailField.on(EVENTS, () => {
+      if (passwordField.length) validatePassword(passwordField, confirmField);
+      const value = emailField.val();
+      if (!value.match(emailRE)) {
+        setInvalid(cfg.emailInvalid, msg.email, emailField);
+        return;
+      }
+      serverCheck(value, msg.email, cfg.emailLink, emailField);
+    });
+    emailField.triggerHandler('input');
+  }
+
+  $('#ucp').on('submit', () =>
+    !(msg.username.hasClass('invalid') || msg.email.hasClass('invalid') ||
+      msg.password.hasClass('invalid') || msg.confirmPassword.hasClass('invalid'))
+  );
+  return true;
+}
+
+(function waitForRegistrationCheck() {
+  if (typeof jQuery === 'undefined' || !document.getElementById('ucp')) {
+    return; // no jQuery or not a UCP/registration page; nothing to do
+  }
+  if (bindAJAXRegistrationCheck(window.jQuery)) return;
+  setTimeout(waitForRegistrationCheck, 50); // retry until config globals appear
+})();
