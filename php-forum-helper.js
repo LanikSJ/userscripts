@@ -2,7 +2,7 @@
 // @name         [LanikSJ] phpBB Forum Helper
 // @namespace    grom & LanikSJ
 // @description  phpBB: view user's posts and topics; removes ads and hidden metadata.
-// @version      1.2.1.260915
+// @version      1.2.2.260915
 ////          ProSilver          \\\\
 // @match        *://adblockplus.org/forum/*
 // @match        *://custombuttons.sourceforge.net/forum/*
@@ -130,18 +130,24 @@ function initAJAXRegistrationCheck($) {
     confirmPassword: $('#pcgf-ajaxregistrationcheck-confirm-password')
   };
   const EVENTS = 'input keyup change blur';
-  let usernameRE = /^.+$/i;
-  let emailRE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/i;
-  // values come from the board's own admin-configured inline script (not user input);
-  // length-capped and compiled in try/catch, so a bad/oversized pattern just falls back
-  // to the safe default above.
-  if (typeof cfg.usernameRule === 'string' && cfg.usernameRule.length <= 200) {
-    // eslint-disable-next-line security/detect-non-literal-regexp
-    try { usernameRE = new RegExp(cfg.usernameRule, 'i'); } catch (e) { /* keep default */ }
+  // Prebuilt literal regexes only — no dynamic RegExp compilation (avoids ReDoS scanner findings).
+  // The server-side check remains the authoritative validator regardless.
+  const PREBUILT_RULES = {
+    '.+': /^.+$/i,
+    '.*': /^.*$/i,
+    '[a-zA-Z0-9_ -]+': /^[a-zA-Z0-9_ -]+$/i,
+    '^[a-zA-Z0-9_-]+$': /^[a-zA-Z0-9_-]+$/i,
+    '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$': /^[^\s@]+@[^\s@]+\.[^\s@]+$/i
+  };
+  const SAFE_USERNAME_RE = /^[\p{L}\p{N}_.\- ]+$/u;
+  const SAFE_EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/i;
+  const usernameRE = PREBUILT_RULES[cfg.usernameRule] || SAFE_USERNAME_RE;
+  const emailRE = PREBUILT_RULES[cfg.emailRule] || SAFE_EMAIL_RE;
+  if (cfg.usernameRule && !PREBUILT_RULES[cfg.usernameRule]) {
+    console.warn('[phpBB Forum Helper] Custom username rule not in safe list; using permissive default.');
   }
-  if (typeof cfg.emailRule === 'string' && cfg.emailRule.length <= 200) {
-    // eslint-disable-next-line security/detect-non-literal-regexp
-    try { emailRE = new RegExp(cfg.emailRule, 'i'); } catch (e) { /* keep default */ }
+  if (cfg.emailRule && !PREBUILT_RULES[cfg.emailRule]) {
+    console.warn('[phpBB Forum Helper] Custom e-mail rule not in safe list; using default.');
   }
 
   const getField = (selector, name) => ($(selector).length ? $(selector) : $(`[name="${name}"]`)).first();
