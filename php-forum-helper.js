@@ -2,7 +2,7 @@
 // @name         [LanikSJ] phpBB Forum Helper
 // @namespace    grom & LanikSJ
 // @description  phpBB: view user's posts and topics; removes ads and hidden metadata.
-// @version      1.2.2.260915
+// @version      1.2.3.260915
 ////          ProSilver          \\\\
 // @match        *://adblockplus.org/forum/*
 // @match        *://custombuttons.sourceforge.net/forum/*
@@ -94,33 +94,47 @@ for (const profile of $c('postprofile')) {
   }
 }
 
+// extension config fields: our key -> global suffix ('pcgfAJAXRegistrationCheck' + suffix)
+const CFG_FIELDS = {
+  usernameMin: 'UsernameMin',
+  usernameMax: 'UsernameMax',
+  usernameRule: 'UsernameRule',
+  usernameInvalid: 'UsernameInvalidBoundaries',
+  usernameLink: 'UsernameCheckLink',
+  emailRule: 'EMailRule',
+  emailInvalid: 'EMailInvalid',
+  emailLink: 'EMailCheckLink',
+  passwordMin: 'PasswordMin',
+  passwordRule: 'PasswordRule',
+  passwordInvalid: 'PasswordInvalid',
+  passwordValid: 'PasswordValid',
+  confirmValid: 'ConfirmPasswordValid',
+  confirmInvalid: 'ConfirmPasswordInvalid',
+  strengthLabel: 'PasswordStrength',
+  veryWeak: 'PasswordVeryWeak',
+  weak: 'PasswordWeak',
+  normal: 'PasswordNormal',
+  strong: 'PasswordStrong',
+  veryStrong: 'PasswordVeryStrong',
+  loading: 'Loading'
+};
+
+// Prebuilt literal regexes only — no dynamic RegExp compilation (avoids ReDoS scanner findings).
+const PREBUILT_RULES = {
+  '.+': /^.+$/i,
+  '.*': /^.*$/i,
+  '[a-zA-Z0-9_ -]+': /^[a-zA-Z0-9_ -]+$/i,
+  '^[a-zA-Z0-9_-]+$': /^[a-zA-Z0-9_-]+$/i,
+  '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$': /^[^\s@]+@[^\s@]+\.[^\s@]+$/i
+};
+const SAFE_USERNAME_RE = /^[\p{L}\p{N}_.\- ]+$/u;
+const SAFE_EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/i;
+
 // AJAX registration check (cleaned from the pcgf/ajaxregistrationcheck extension);
 // a no-op unless the page provides the extension's config globals (e.g. UCP register).
 function initAJAXRegistrationCheck($) {
-  const ext = 'pcgfAJAXRegistrationCheck';
-  const cfg = {
-    usernameMin: window[ext + 'UsernameMin'],
-    usernameMax: window[ext + 'UsernameMax'],
-    usernameRule: window[ext + 'UsernameRule'],
-    usernameInvalid: window[ext + 'UsernameInvalidBoundaries'],
-    usernameLink: window[ext + 'UsernameCheckLink'],
-    emailRule: window[ext + 'EMailRule'],
-    emailInvalid: window[ext + 'EMailInvalid'],
-    emailLink: window[ext + 'EMailCheckLink'],
-    passwordMin: window[ext + 'PasswordMin'],
-    passwordRule: window[ext + 'PasswordRule'],
-    passwordInvalid: window[ext + 'PasswordInvalid'],
-    passwordValid: window[ext + 'PasswordValid'],
-    confirmValid: window[ext + 'ConfirmPasswordValid'],
-    confirmInvalid: window[ext + 'ConfirmPasswordInvalid'],
-    strengthLabel: window[ext + 'PasswordStrength'],
-    veryWeak: window[ext + 'PasswordVeryWeak'],
-    weak: window[ext + 'PasswordWeak'],
-    normal: window[ext + 'PasswordNormal'],
-    strong: window[ext + 'PasswordStrong'],
-    veryStrong: window[ext + 'PasswordVeryStrong'],
-    loading: window[ext + 'Loading']
-  };
+  const cfg = {};
+  for (const [key, suffix] of Object.entries(CFG_FIELDS)) cfg[key] = window['pcgfAJAXRegistrationCheck' + suffix];
   if (Object.values(cfg).some(v => typeof v === 'undefined')) return false; // config not ready yet
 
   const msg = {
@@ -130,17 +144,6 @@ function initAJAXRegistrationCheck($) {
     confirmPassword: $('#pcgf-ajaxregistrationcheck-confirm-password')
   };
   const EVENTS = 'input keyup change blur';
-  // Prebuilt literal regexes only — no dynamic RegExp compilation (avoids ReDoS scanner findings).
-  // The server-side check remains the authoritative validator regardless.
-  const PREBUILT_RULES = {
-    '.+': /^.+$/i,
-    '.*': /^.*$/i,
-    '[a-zA-Z0-9_ -]+': /^[a-zA-Z0-9_ -]+$/i,
-    '^[a-zA-Z0-9_-]+$': /^[a-zA-Z0-9_-]+$/i,
-    '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$': /^[^\s@]+@[^\s@]+\.[^\s@]+$/i
-  };
-  const SAFE_USERNAME_RE = /^[\p{L}\p{N}_.\- ]+$/u;
-  const SAFE_EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/i;
   const usernameRE = PREBUILT_RULES[cfg.usernameRule] || SAFE_USERNAME_RE;
   const emailRE = PREBUILT_RULES[cfg.emailRule] || SAFE_EMAIL_RE;
   if (cfg.usernameRule && !PREBUILT_RULES[cfg.usernameRule]) {
