@@ -41,7 +41,7 @@ function $t(a, b) { return (b || document.body).getElementsByTagName(a); }
 
 // trim title
 var loc = location.hostname;
-if (loc.match('adblockplus|custombuttons|foldingforum|debian|informaction|lanik\.us|linuxmint|sandboxie|virtualbox|wesnoth|xkcd\.com|palemoon|ibdof\.com|xnview\.com|sublimetext|synthesiagame'))
+if (loc.match('adblockplus|custombuttons|foldingforum|debian|informaction|lanik.us|linuxmint|sandboxie|virtualbox|wesnoth|xkcd\.com|palemoon|ibdof\.com|xnview\.com|sublimetext|synthesiagame'))
   document.title = document.title.replace(/^[a-zA-Z\s\.-]+• (?:View topic - |View forum - )?/, '');
 else if (loc.match('freegamedev')) document.title = document.title.replace(/(?:Topic - |Forum - )?(.*) • FreeGameDev Forums - Open Source Game Development/, '$1');
 else if (loc.match('mozillazine')) document.title = document.title.replace(' • mozillaZine Forums', '');
