@@ -20,6 +20,20 @@ userscripts contains personal browser userscripts for site enhancements and auto
 - Provide troubleshooting guidance for common issues.
 - Use markdown formatting consistently.
 
+### Version Sync (MANDATORY)
+
+- Every userscript's version lives in TWO places that MUST stay in sync:
+  - the `// @version` line in the script's metadata block (e.g., `php-forum-helper.js`)
+  - the "Current version" reference in that script's section in `README.md`
+- When bumping `@version`, update the matching README reference in the SAME change.
+- Never bump the version in only one file; a mismatch means the change is incomplete.
+- Before committing, verify both copies match:
+
+  ```bash
+  grep -n '@version' <script>.js
+  grep -n 'Current version' README.md
+  ```
+
 ### Markdown Compliance Requirements (MANDATORY)
 
 - **ALL markdown files (.md) MUST pass markdownlint validation with zero errors or warnings**

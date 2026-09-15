@@ -11,7 +11,10 @@ A collection of user scripts for AdGuard, TamperMonkey, and ViolentMonkey to enh
 
 [![Install Script](https://img.shields.io/badge/Install-Paywall%20Bypass%20Script-green?style=for-the-badge&logo=greasyfork)](https://raw.githubusercontent.com/LanikSJ/userscripts/main/paywall-bypass-script.js)
 
-**One-click installation:** Click the button above to install the Paywall Bypass Script directly to your browser extension.
+[![Install Script](https://img.shields.io/badge/Install-phpBB%20Forum%20Helper-blue?style=for-the-badge&logo=greasyfork)](https://raw.githubusercontent.com/LanikSJ/userscripts/main/php-forum-helper.js)
+
+**One-click installation:** Click the buttons above to install the Paywall Bypass Script or the phpBB Forum Helper
+directly to your browser extension.
 
 **Manual installation:** Download the script file and import it into your user script manager.
 
@@ -27,6 +30,11 @@ A collection of user scripts for AdGuard, TamperMonkey, and ViolentMonkey to enh
     - [📱 AdGuard App (Desktop/Mobile)](#-adguard-app-desktopmobile)
   - [🎮 Usage](#-usage)
   - [🌐 Supported Sites](#-supported-sites)
+- [💬 phpBB Forum Helper](#-phpbb-forum-helper)
+  - [✨ phpBB Features](#-phpbb-features)
+  - [📥 phpBB Installation](#-phpbb-installation)
+  - [🎮 phpBB Usage](#-phpbb-usage)
+  - [🌐 phpBB Supported Sites](#-phpbb-supported-sites)
 - [🛠️ Scripts Directory](#️-scripts-directory)
 - [📜 License](#-license)
 - [🤝 Contributing](#-contributing)
@@ -151,6 +159,72 @@ The script supports paywall bypass for hundreds of news websites across the glob
 - **Business**: Bloomberg, Financial Times, Wall Street Journal, Economist, etc.
 - **Tech**: Wired, The Verge, TechCrunch, Ars Technica, etc.
 - **Regional**: Sites from Australia, Europe, Asia, and the Americas
+
+## 💬 phpBB Forum Helper
+
+A user script that enhances phpBB forums running the ProSilver style. Current version: `1.2.4.260915`.
+
+[![Install Script](https://img.shields.io/badge/Install-phpBB%20Forum%20Helper-blue?style=for-the-badge&logo=greasyfork)](https://raw.githubusercontent.com/LanikSJ/userscripts/main/php-forum-helper.js)
+
+**One-click installation:** Click the button above to install the phpBB Forum Helper directly to your browser extension,
+or download [`php-forum-helper.js`](php-forum-helper.js) for manual import.
+
+### ✨ phpBB Features
+
+- **View User's Posts & Topics**: Injects pill-style **post** / **topic** buttons into each poster's profile panel,
+  placed directly under the Contact row (falls back to under Posts or the end of the profile). They link to
+  `search.php` filtered by that author.
+- **Clickable Rows**: Makes entire forum and topic list rows (`.row`) clickable — clicking anywhere opens the
+  forum/topic title link, while middle-click still performs the browser's native behavior.
+- **AJAX Registration Check**: On phpBB boards with the
+  [PCGF AJAX Registration Check](https://github.com/LanikSJ/phpBB-AJAX-Registration-Check) extension installed, provides
+  live username availability and e-mail validation, password rule checking, an animated password-strength meter, and a
+  submit guard on the registration form. Silently does nothing on boards without the extension.
+- **Ad & Metadata Removal**: Removes injected ad containers (`#gootop`, `#goobot`, `.adsbygoogle`) and hidden
+  metadata (`description`, `keywords`, `copyright` meta tags).
+- **Favicon Fix**: Restores the favicon on the Custom Buttons forum.
+
+### 📥 phpBB Installation
+
+1. Install a user script manager (Tampermonkey, Violentmonkey, Greasemonkey, or AdGuard — see the detailed steps in the
+   [Paywall Bypass installation section](#-installation)).
+2. Install the script:
+   - Download [`php-forum-helper.js`](php-forum-helper.js) and import it, **or**
+   - Install from URL: `https://raw.githubusercontent.com/LanikSJ/userscripts/main/php-forum-helper.js`
+
+### 🎮 phpBB Usage
+
+- Visit any supported phpBB forum — everything runs automatically.
+- Look for the **post** / **topic** buttons in each user's profile panel when reading a topic.
+- Click anywhere in a forum or topic row to open it; middle-click to open in a background tab.
+- On a supported board's registration page, form fields are validated live as you type.
+
+### 🌐 phpBB Supported Sites
+
+All matched forums run the ProSilver style:
+
+| Forum                | URL                                   |
+| -------------------- | ------------------------------------- |
+| AdBlock Plus         | `adblockplus.org/forum`               |
+| Custom Buttons       | `custombuttons.sourceforge.net/forum` |
+| Folding Forum        | `foldingforum.org`                    |
+| Debian Forums        | `forums.debian.net`                   |
+| InformAction         | `forums.informaction.com`             |
+| Lanik Forums         | `forums.lanik.us`                     |
+| Linux Mint Community | `forums.linuxmint.com`                |
+| Sandboxie            | `forums.sandboxie.com`                |
+| VirtualBox           | `forums.virtualbox.org`               |
+| Battle for Wesnoth   | `forums.wesnoth.org`                  |
+| xkcd                 | `forums.xkcd.com`                     |
+| Enjoy Sudoku         | `forum.enjoysudoku.com`               |
+| FreeGameDev          | `forum.freegamedev.net`               |
+| OpenOffice           | `forum.openoffice.org`                |
+| Pale Moon            | `forum.palemoon.org`                  |
+| VideoLAN             | `forum.videolan.org`                  |
+| IBDOF                | `ibdof.com`                           |
+| XnView               | `newsgroup.xnview.com`                |
+| Sublime Text         | `www.sublimetext.com/forum`           |
+| Synthesia            | `*.synthesiagame.com/forum`           |
 
 ### 📜 License
 
