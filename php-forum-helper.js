@@ -2,7 +2,7 @@
 // @name         [LanikSJ] phpBB Forum Helper
 // @namespace    grom & LanikSJ
 // @description  phpBB: view user's posts and topics; removes ads and hidden metadata.
-// @version      1.0.8.260915
+// @version      1.0.9.260915
 ////          ProSilver          \\\\
 // @match        *://adblockplus.org/forum/*
 // @match        *://custombuttons.sourceforge.net/forum/*
@@ -92,6 +92,3 @@ if (list) {
     }
   }
 }
-
-// clear memory
-var loc = '', trash = '', a = '', list = '', user = '', i = '', len = '';
