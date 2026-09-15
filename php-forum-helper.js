@@ -2,7 +2,7 @@
 // @name         [LanikSJ] phpBB Forum Helper
 // @namespace    grom & LanikSJ
 // @description  phpBB: view user's posts and topics; removes ads and hidden metadata.
-// @version      1.1.0.260915
+// @version      1.1.2.260915
 ////          ProSilver          \\\\
 // @match        *://adblockplus.org/forum/*
 // @match        *://custombuttons.sourceforge.net/forum/*
@@ -60,6 +60,17 @@ function mkLink(word, user) {
   a.href = `search.php?sr=${word}s&author_id=${user}`;
   a.className = 'php-helper-btn';
   return a;
+}
+
+// make forum/topic rows fully clickable (middle-click ignored)
+function rowClickHandler(e) {
+  if (e.which === 2) return; // let middle-click through
+  const title = this.querySelector('.forumtitle, .topictitle');
+  if (title) location.assign(title.href);
+}
+for (const row of document.querySelectorAll('.row')) {
+  row.onclick = null;
+  row.addEventListener('click', rowClickHandler, false);
 }
 
 // view user's posts/topics
