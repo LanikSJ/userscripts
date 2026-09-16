@@ -16,6 +16,8 @@
 (function () {
   'use strict';
 
+  /* global unsafeWindow */
+
   unsafeWindow.Element.prototype._attachShadow = unsafeWindow.Element.prototype.attachShadow;
   unsafeWindow.Element.prototype.attachShadow = function () {
     return this._attachShadow({
@@ -65,40 +67,23 @@
   let sponsoredTexts = ["promoted", "sponsoreed", "sponsored", "spaahnserd", "spawhnserd", "spawnserd", "spaunsered", "spaunserd", "spauncered", "spauncerd", "spohnserd", "spohncerd", "spohncered", "spawncerd", "spawncered"]
 
   function isSponsored(elem) {
-    if (elem) {
-      // var descendentDivs = elem.querySelectorAll('section, div')
+    if (!elem) return false;
 
-      // var sponsored = Array.from(descendentDivs).find(div => div !== null && div.shadowRoot !== null)
+    const sponsored = elem.querySelector('*[data-cfp-eligible]');
 
-      // if (sponsored) {
-      // return true;
-      // } else return false;
-
-      const sponsored = elem.querySelector('*[data-cfp-eligible]')
-
-      if (sponsored) {
-        return true;
-      } else return false;
-
-    } else return false
+    return Boolean(sponsored);
   }
 
   function isSponsoredImg(img) {
-    if (img) {
-      let attrs = Array.from(img.attributes)
+    if (!img) return false;
 
-      let isSponsored = attrs.find(({
-        name,
-        value
-      }) => sponsoredTexts.find(txt => value.toLowerCase().includes(txt)))
+    const attrs = Array.from(img.attributes);
 
-      // let ariaLabel = img.getAttribute('aria-label')
-      // if (sponsoredTexts.includes(img.alt.toLowerCase().trim()) || (ariaLabel && sponsoredTexts.includes(img.getAttribute('aria-label').toLowerCase().trim()))) {
-      if (isSponsored) {
-        return true;
-      } else return false;
+    const isSponsored = attrs.find(({
+      value
+    }) => sponsoredTexts.find(txt => value.toLowerCase().includes(txt)));
 
-    } else return false
+    return Boolean(isSponsored);
   }
 
   function individualItems(jNode) {
@@ -106,7 +91,7 @@
 
     if (isSponsored(li)) {
       let parent = li.parentNode;
-      if (parent.tagName == 'DIV') {
+      if (parent.tagName === 'DIV') {
         parent.style.display = 'none'
       } else {
         li.style.display = 'none';
@@ -145,33 +130,15 @@
   function blockAdsInCart(jNode) {
     let div = jNode
 
-    if (div.innerHTML.indexOf('Suggested items') != -1) {
+    if (div.innerHTML.indexOf('Suggested items') !== -1) {
       div.style.display = 'none'
     }
-  }
-
-  function homeBanner(jNode) {
-    let carousel = jNode.closest('div[aria-label="carousel"]')
-
-    if (carousel) {
-      carousel.style.display = "none"
-    }
-  }
-
-  function getbyXpath(xpath, contextNode) {
-    let results = [];
-    let query = document.evaluate(xpath, contextNode || document,
-      null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-    for (let i = 0, length = query.snapshotLength; i < length; ++i) {
-      results.push(query.snapshotItem(i));
-    }
-    return results;
   }
 
   function defaultTip(jNode) {
     const spans = jNode.querySelectorAll('span');
 
-    const otherSpan = [...spans].filter(span => span.innerHTML == 'Other')[0]
+    const otherSpan = [...spans].filter(span => span.innerHTML === 'Other')[0]
 
     if (otherSpan) {
       let otherBtn = otherSpan.closest('button')
@@ -198,7 +165,7 @@
 
     function traverseAncestors(node) {
       if (node) {
-        if (node.tagName == 'DIV') {
+        if (node.tagName === 'DIV') {
           // let spans = node.querySelectorAll('span')
           // let sponsoredSpans = [...spans].filter(span => span.innerHTML == ' nsored')
           let imgs = node.querySelectorAll('img')
@@ -206,7 +173,7 @@
           let individualSponsored = isSponsored(node)
           let scrollbars = node.querySelectorAll('.u-noscrollbar')
 
-          if ((sponsoredImgs.length > 0) && (!individualSponsored) && (scrollbars.length == 1)) {
+          if ((sponsoredImgs.length > 0) && (!individualSponsored) && (scrollbars.length === 1)) {
             console.log(node)
             node.style.display = 'none';
           } else if (scrollbars.length > 1) {
