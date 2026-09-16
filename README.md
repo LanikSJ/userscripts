@@ -28,7 +28,7 @@ and `@homepageURL` metadata so user script managers can detect and install updat
 
 | Script               | Current Version |
 | -------------------- | --------------- |
-| Paywall Bypass       | `2.0.5.260916`  |
+| Paywall Bypass       | `2.0.6.260916`  |
 | phpBB Forum Helper   | `1.2.5.260915`  |
 | Instacart Ad Remover | `72.0.0.260916` |
 
@@ -62,7 +62,7 @@ and `@homepageURL` metadata so user script managers can detect and install updat
 ## 🔓 Paywall Bypass Script
 
 A comprehensive user script designed to help bypass paywalls on news websites by redirecting to archive services.
-Current version: `2.0.5.260916`.
+Current version: `2.0.6.260916`.
 
 ### ✨ Features
 
