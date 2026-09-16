@@ -26,11 +26,11 @@ All scripts follow a `semver.YYMMDD` versioning scheme (e.g. `2.0.5.260916` = ve
 2026-09-16). Every script header also includes `@downloadURL`, `@updateURL` (pointing to the raw file on GitHub),
 and `@homepageURL` metadata so user script managers can detect and install updates automatically.
 
-| Script                  | Current Version    |
-| ----------------------- | ------------------ |
-| Paywall Bypass          | `2.0.5.260916`     |
-| phpBB Forum Helper      | `1.2.5.260915`     |
-| Instacart Ad Remover    | `72.0.0.260916`    |
+| Script               | Current Version |
+| -------------------- | --------------- |
+| Paywall Bypass       | `2.0.5.260916`  |
+| phpBB Forum Helper   | `1.2.5.260915`  |
+| Instacart Ad Remover | `72.0.0.260916` |
 
 ## 📚 Table of Contents
 
@@ -289,10 +289,10 @@ so your user script manager can check GitHub for updates automatically.
 
 ### 🌐 Instacart Supported Sites
 
-| Site         | URL Pattern               |
-| ------------ | ------------------------- |
-| Instacart US | `*.instacart.com`         |
-| Instacart CA | `*.instacart.ca`          |
+| Site         | URL Pattern       |
+| ------------ | ----------------- |
+| Instacart US | `*.instacart.com` |
+| Instacart CA | `*.instacart.ca`  |
 
 ### 📜 License
 
