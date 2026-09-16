@@ -13,15 +13,30 @@ A collection of user scripts for AdGuard, TamperMonkey, and ViolentMonkey to enh
 
 [![Install Script](https://img.shields.io/badge/Install-phpBB%20Forum%20Helper-blue?style=for-the-badge&logo=greasyfork)](https://raw.githubusercontent.com/LanikSJ/userscripts/main/php-forum-helper.js)
 
-**One-click installation:** Click the buttons above to install the Paywall Bypass Script or the phpBB Forum Helper
-directly to your browser extension.
+[![Install Script](https://img.shields.io/badge/Install-Instacart%20Ad%20Remover-orange?style=for-the-badge&logo=greasyfork)](https://raw.githubusercontent.com/LanikSJ/userscripts/main/instacart-ad-remover.js)
+
+**One-click installation:** Click the buttons above to install the Paywall Bypass Script, the phpBB Forum Helper,
+or the Instacart Ad Remover directly to your browser extension.
 
 **Manual installation:** Download the script file and import it into your user script manager.
+
+### 🔖 Versioning
+
+All scripts follow a `semver.YYMMDD` versioning scheme (e.g. `2.0.5.260916` = version 2.0.5 released on
+2026-09-16). Every script header also includes `@downloadURL`, `@updateURL` (pointing to the raw file on GitHub),
+and `@homepageURL` metadata so user script managers can detect and install updates automatically.
+
+| Script                  | Current Version    |
+| ----------------------- | ------------------ |
+| Paywall Bypass          | `2.0.5.260916`     |
+| phpBB Forum Helper      | `1.2.5.260915`     |
+| Instacart Ad Remover    | `72.0.0.260916`    |
 
 ## 📚 Table of Contents
 
 - [📱 userscripts](#-userscripts)
 - [🚀 Quick Install](#-quick-install)
+  - [🔖 Versioning](#-versioning)
 - [🔓 Paywall Bypass Script](#-paywall-bypass-script)
   - [✨ Features](#-features)
   - [📥 Installation](#-installation)
@@ -35,6 +50,10 @@ directly to your browser extension.
   - [📥 phpBB Installation](#-phpbb-installation)
   - [🎮 phpBB Usage](#-phpbb-usage)
   - [🌐 phpBB Supported Sites](#-phpbb-supported-sites)
+- [🛒 Instacart Ad Remover](#-instacart-ad-remover)
+  - [✨ Instacart Features](#-instacart-features)
+  - [📥 Instacart Installation](#-instacart-installation)
+  - [🌐 Instacart Supported Sites](#-instacart-supported-sites)
 - [🛠️ Scripts Directory](#️-scripts-directory)
 - [📜 License](#-license)
 - [🤝 Contributing](#-contributing)
@@ -43,6 +62,7 @@ directly to your browser extension.
 ## 🔓 Paywall Bypass Script
 
 A comprehensive user script designed to help bypass paywalls on news websites by redirecting to archive services.
+Current version: `2.0.5.260916`.
 
 ### ✨ Features
 
@@ -164,6 +184,9 @@ The script supports paywall bypass for hundreds of news websites across the glob
 
 A user script that enhances phpBB forums running the ProSilver style. Current version: `1.2.5.260915`.
 
+**Note:** The script header now includes `@downloadURL`, `@updateURL`, and `@homepageURL` metadata, so your user
+script manager can check GitHub for updates automatically.
+
 [![Install Script](https://img.shields.io/badge/Install-phpBB%20Forum%20Helper-blue?style=for-the-badge&logo=greasyfork)](https://raw.githubusercontent.com/LanikSJ/userscripts/main/php-forum-helper.js)
 
 **One-click installation:** Click the button above to install the phpBB Forum Helper directly to your browser extension,
@@ -185,8 +208,12 @@ or download [`php-forum-helper.js`](php-forum-helper.js) for manual import.
 1. Install a user script manager (Tampermonkey, Violentmonkey, Greasemonkey, or AdGuard — see the detailed steps in the
    [Paywall Bypass installation section](#-installation)).
 2. Install the script:
-   - Download [`php-forum-helper.js`](php-forum-helper.js) and import it, **or**
+   - One-click: use the **Install phpBB Forum Helper** button above
+   - Download [`php-forum-helper.js`](php-forum-helper.js) and import it into your user script manager, **or**
    - Install from URL: `https://raw.githubusercontent.com/LanikSJ/userscripts/main/php-forum-helper.js`
+3. Verify installation:
+   - Visit a supported phpBB forum (see [Supported Sites](#-phpbb-supported-sites))
+   - Look for the **post** / **topic** buttons in each user's profile panel
 
 ### 🎮 phpBB Usage
 
@@ -221,6 +248,51 @@ All matched forums run the ProSilver style:
 | XnView               | `newsgroup.xnview.com`                |
 | Sublime Text         | `www.sublimetext.com/forum`           |
 | Synthesia            | `*.synthesiagame.com/forum`           |
+
+## 🛒 Instacart Ad Remover
+
+A user script that blocks sponsored content, promo carousels, and dynamically inserted ad placements across
+Instacart (both `.com` and `.ca`). Also available on
+[Greasy Fork](https://greasyfork.org/en/scripts/510324-instacart-ad-remover). Current version: `72.0.0.260916`.
+
+**Note:** The script header includes `@downloadURL`, `@updateURL`, and `@homepageURL` metadata (pointing to GitHub),
+so your user script manager can check GitHub for updates automatically.
+
+### ✨ Instacart Features
+
+- **Search Page Ads**: Hides sponsored product listings and merges non-sponsored rows back into the main list
+- **Product Listing Ads**: Detects sponsored items via `data-cfp-eligible` markers and "promoted" image attributes
+- **Sponsored Carousels**: Removes sponsored carousel blocks (including ones rendered in closed Shadow DOM, which
+  are forced open)
+- **Placement Blocks**: Hides unified data-placement ad blocks and recommendation feeds, including dynamically
+  inserted ones (tracked via a debounced `MutationObserver`)
+- **Cart Cleanup**: Hides "Suggested items" upsells in the cart
+- **Offer/Announcement Banners**: Hides promotional banners and the "Treatment Tracker modal"
+- **Auto-Continue**: Clicks "Continue to checkout" when the button appears
+- **Default Tip**: Auto-selects the tip dialog's "Other" flow (opt-in behavior of the original script)
+
+### 📥 Instacart Installation
+
+1. Install a user script manager:
+   - [Tampermonkey](https://www.tampermonkey.net/)
+   - [Violentmonkey](https://violentmonkey.github.io/)
+   - [Greasemonkey](https://www.greasespot.net/) (Firefox)
+   - AdGuard (see the detailed steps in the [Paywall Bypass installation section](#-installation))
+2. Install the script:
+   - One-click: use the **Install Instacart Ad Remover** button above, or the
+     [Greasy Fork page](https://greasyfork.org/en/scripts/510324-instacart-ad-remover)
+   - Download [`instacart-ad-remover.js`](instacart-ad-remover.js) and import it into your user script manager, **or**
+   - Install from URL: `https://raw.githubusercontent.com/LanikSJ/userscripts/main/instacart-ad-remover.js`
+3. Verify installation:
+   - Visit [instacart.com](https://www.instacart.com/) or [instacart.ca](https://www.instacart.ca/)
+   - Sponsored listings, promo carousels, and ad placements should be hidden automatically
+
+### 🌐 Instacart Supported Sites
+
+| Site         | URL Pattern               |
+| ------------ | ------------------------- |
+| Instacart US | `*.instacart.com`         |
+| Instacart CA | `*.instacart.ca`          |
 
 ### 📜 License
 
