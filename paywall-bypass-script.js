@@ -211,7 +211,6 @@
 // @match        *://wsj.com/*
 // @grant        GM_registerMenuCommand
 // @grant        GM_addStyle
-// @grant        GM_addElement
 // @grant        GM_getValue
 // @grant        GM_setValue
 // ==/UserScript==
@@ -219,7 +218,7 @@
 (function () {
   "use strict";
 
-  /* global GM_registerMenuCommand, GM_addStyle, GM_addElement, GM_getValue, GM_setValue */
+  /* global GM_registerMenuCommand, GM_addStyle, GM_getValue, GM_setValue */
 
   // Configuration - Load saved preference or default to true
   let showFloatingButton = GM_getValue("showFloatingButton", true);
