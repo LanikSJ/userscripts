@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Paywall Bypass
 // @namespace    http://github.com/
-// @version      2.0.5.260916
+// @version      2.0.6.260916
 // @description  Mobile and desktop-friendly paywall bypass with dropdown menu and right-click options.
 // @downloadURL  https://raw.githubusercontent.com/LanikSJ/userscripts/main/paywall-bypass-script.js
 // @updateURL    https://raw.githubusercontent.com/LanikSJ/userscripts/main/paywall-bypass-script.js
@@ -211,13 +211,14 @@
 // @match        *://wsj.com/*
 // @grant        GM_registerMenuCommand
 // @grant        GM_addStyle
-// @grant        GM_addElement
 // @grant        GM_getValue
 // @grant        GM_setValue
 // ==/UserScript==
 
 (function () {
   "use strict";
+
+  /* global GM_registerMenuCommand, GM_addStyle, GM_getValue, GM_setValue */
 
   // Configuration - Load saved preference or default to true
   let showFloatingButton = GM_getValue("showFloatingButton", true);
@@ -414,7 +415,7 @@
   function archivePage(baseURL) {
     const currentUrl = window.location.href;
     if (isValidProtocol(currentUrl)) {
-      window.location.href = baseURL + encodeURIComponent(currentUrl);
+      window.location.assign(baseURL + encodeURIComponent(currentUrl));
     }
   }
 
