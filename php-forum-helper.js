@@ -2,8 +2,10 @@
 // @name         [LanikSJ] phpBB Forum Helper
 // @namespace    grom & LanikSJ
 // @description  phpBB: view user's posts and topics; removes ads and hidden metadata.
+// @downloadURL  https://raw.githubusercontent.com/LanikSJ/userscripts/main/php-forum-helper.js
+// @updateURL    https://raw.githubusercontent.com/LanikSJ/userscripts/main/php-forum-helper.js
+// @homepageURL  https://laniksj.github.io/userscripts
 // @version      1.2.5.260915
-////          ProSilver          \\\\
 // @match        *://adblockplus.org/forum/*
 // @match        *://custombuttons.sourceforge.net/forum/*
 // @match        *://foldingforum.org/*

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Paywall Bypass
 // @namespace    http://github.com/
-// @version      2.0.4
+// @version      2.0.5.260916
 // @description  Mobile and desktop-friendly paywall bypass with dropdown menu and right-click options.
 // @downloadURL  https://raw.githubusercontent.com/LanikSJ/userscripts/main/paywall-bypass-script.js
 // @updateURL    https://raw.githubusercontent.com/LanikSJ/userscripts/main/paywall-bypass-script.js
