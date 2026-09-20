@@ -9,14 +9,17 @@ A collection of user scripts for AdGuard, TamperMonkey, and ViolentMonkey to enh
 
 ## 🚀 Quick Install
 
+[![Install Script](https://img.shields.io/badge/Install-HTML5%20Video%20Playing%20Tools-red?style=for-the-badge&logo=greasyfork)](https://raw.githubusercontent.com/LanikSJ/userscripts/main/html5-video-playing-tools.js)
+
+[![Install Script](https://img.shields.io/badge/Install-Instacart%20Ad%20Remover-orange?style=for-the-badge&logo=greasyfork)](https://raw.githubusercontent.com/LanikSJ/userscripts/main/instacart-ad-remover.js)
+
 [![Install Script](https://img.shields.io/badge/Install-Paywall%20Bypass%20Script-green?style=for-the-badge&logo=greasyfork)](https://raw.githubusercontent.com/LanikSJ/userscripts/main/paywall-bypass-script.js)
 
 [![Install Script](https://img.shields.io/badge/Install-phpBB%20Forum%20Helper-blue?style=for-the-badge&logo=greasyfork)](https://raw.githubusercontent.com/LanikSJ/userscripts/main/php-forum-helper.js)
 
-[![Install Script](https://img.shields.io/badge/Install-Instacart%20Ad%20Remover-orange?style=for-the-badge&logo=greasyfork)](https://raw.githubusercontent.com/LanikSJ/userscripts/main/instacart-ad-remover.js)
-
-**One-click installation:** Click the buttons above to install the Paywall Bypass Script, the phpBB Forum Helper,
-or the Instacart Ad Remover directly to your browser extension.
+**One-click installation:** Click the buttons above to install the HTML5 Video Playing Tools, the
+Instacart Ad Remover, the Paywall Bypass Script, or the phpBB Forum Helper directly to your browser
+extension.
 
 **Manual installation:** Download the script file and import it into your user script manager.
 
@@ -28,15 +31,25 @@ and `@homepageURL` metadata so user script managers can detect and install updat
 
 | Script               | Current Version |
 | -------------------- | --------------- |
+| HTML5 Video Tools    | `2.2.0.260920`  |
+| Instacart Ad Remover | `72.0.0.260916` |
 | Paywall Bypass       | `2.0.6.260916`  |
 | phpBB Forum Helper   | `1.2.5.260915`  |
-| Instacart Ad Remover | `72.0.0.260916` |
 
 ## 📚 Table of Contents
 
 - [📱 userscripts](#-userscripts)
 - [🚀 Quick Install](#-quick-install)
   - [🔖 Versioning](#-versioning)
+- [🎬 HTML5 Video Playing Tools](#-html5-video-playing-tools)
+  - [✨ HTML5 Video Features](#-html5-video-features)
+  - [📥 HTML5 Video Installation](#-html5-video-installation)
+  - [🎮 HTML5 Video Hotkeys](#-html5-video-hotkeys)
+  - [🌐 HTML5 Video Supported Sites](#-html5-video-supported-sites)
+- [🛒 Instacart Ad Remover](#-instacart-ad-remover)
+  - [✨ Instacart Features](#-instacart-features)
+  - [📥 Instacart Installation](#-instacart-installation)
+  - [🌐 Instacart Supported Sites](#-instacart-supported-sites)
 - [🔓 Paywall Bypass Script](#-paywall-bypass-script)
   - [✨ Features](#-features)
   - [📥 Installation](#-installation)
@@ -50,14 +63,127 @@ and `@homepageURL` metadata so user script managers can detect and install updat
   - [📥 phpBB Installation](#-phpbb-installation)
   - [🎮 phpBB Usage](#-phpbb-usage)
   - [🌐 phpBB Supported Sites](#-phpbb-supported-sites)
-- [🛒 Instacart Ad Remover](#-instacart-ad-remover)
-  - [✨ Instacart Features](#-instacart-features)
-  - [📥 Instacart Installation](#-instacart-installation)
-  - [🌐 Instacart Supported Sites](#-instacart-supported-sites)
 - [🛠️ Scripts Directory](#️-scripts-directory)
 - [📜 License](#-license)
 - [🤝 Contributing](#-contributing)
 - [⚠️ Disclaimer](#️-disclaimer)
+
+## 🎬 HTML5 Video Playing Tools
+
+Adds playback hotkeys to HTML5 video players across mainstream video and live streaming sites, with
+per-site UI integration. Current version: `2.2.0.260920`.
+
+### ✨ HTML5 Video Features
+
+- **Playback Hotkeys**: Fast forward/rewind (5s and 20s with Shift), pause/play, volume up/down
+- **Frame Stepping**: Skip to previous or next frame (D/F keys, E on YouTube)
+- **Playback Speed**: Speed up/slow down by 0.1 (C/X keys, V key on YouTube), toggle
+  boosted speed (Z key), and optionally remember playback speed per browser
+- **Full Screen Modes**: Toggle video full screen (Enter) and web/page full screen (Shift+Enter)
+- **Picture-in-Picture**: Enter/exit picture-in-picture mode (I key)
+- **Video Screenshot**: Capture a PNG screenshot of the current frame (P key)
+- **Video Caching**: Buffer the whole video for lag-free playback (M key)
+- **Next Episode**: Skip to the next video or episode (N key)
+- **Custom Sites**: Works on any `/play` URL and supports sites not explicitly listed
+
+### 📥 HTML5 Video Installation
+
+1. Install a user script manager:
+   - [Tampermonkey](https://www.tampermonkey.net/)
+   - [Violentmonkey](https://violentmonkey.github.io/)
+   - [Greasemonkey](https://www.greasespot.net/) (Firefox)
+   - AdGuard (see the detailed steps in the [Paywall Bypass installation section](#-installation))
+2. Install the script:
+   - One-click: use the **Install HTML5 Video Playing Tools** button above
+   - Download [`html5-video-playing-tools.js`](html5-video-playing-tools.js) and import it into
+     your user script manager, **or**
+   - Install from URL:
+     `https://raw.githubusercontent.com/LanikSJ/userscripts/main/html5-video-playing-tools.js`
+3. Verify installation:
+   - Visit a supported video site (e.g. YouTube)
+   - Open the hotkey list from the user script manager's menu ("Hotkeys list")
+   - Playback hotkeys should work immediately
+
+### 🎮 HTML5 Video Hotkeys
+
+| Key                | Action                                  |
+| ------------------ | --------------------------------------- |
+| `←` / `→`          | Rewind / fast forward 5 seconds         |
+| `Shift` + `←` / `→`| Rewind / fast forward 20 seconds        |
+| `↑` / `↓`          | Raise / lower the volume                |
+| `Space`            | Pause / play                            |
+| `Enter`            | Toggle full screen                      |
+| `Shift` + `Enter`  | Toggle web (page) full screen           |
+| `Esc`              | Exit full screen                        |
+| `P`                | Take a screenshot                       |
+| `I`                | Toggle picture-in-picture               |
+| `M`                | Enable/disable video caching            |
+| `N`                | Play the next video/episode             |
+| `C` / `X`          | Speed up / slow down by 0.1             |
+| `Z`                | Toggle boosted playback speed           |
+| `D` / `F`          | Previous / next frame                   |
+
+Notes: YouTube remaps some keys (`V` for speed and `E` for next frame); see the
+"Hotkeys list" menu entry for the complete per-site mapping.
+
+### 🌐 HTML5 Video Supported Sites
+
+| Site        | URL Pattern                 |
+| ----------- | --------------------------- |
+| YouTube     | `www.youtube.com`           |
+| TED         | `www.ted.com/talks`         |
+| Twitch      | `www.twitch.tv`             |
+| Vimeo       | `vimeo.com`                 |
+| Dailymotion | `www.dailymotion.com/video` |
+| Odysee      | `odysee.com`                |
+| Kick        | `kick.com`                  |
+| PeerTube    | any instance `/w/` pages    |
+| Custom      | any URL containing `play`   |
+
+## 🛒 Instacart Ad Remover
+
+A user script that blocks sponsored content, promo carousels, and dynamically inserted ad placements across
+Instacart (both `.com` and `.ca`). Also available on
+[Greasy Fork](https://greasyfork.org/en/scripts/510324-instacart-ad-remover). Current version: `72.0.0.260916`.
+
+**Note:** The script header includes `@downloadURL`, `@updateURL`, and `@homepageURL` metadata (pointing to GitHub),
+so your user script manager can check GitHub for updates automatically.
+
+### ✨ Instacart Features
+
+- **Search Page Ads**: Hides sponsored product listings and merges non-sponsored rows back into the main list
+- **Product Listing Ads**: Detects sponsored items via `data-cfp-eligible` markers and "promoted" image attributes
+- **Sponsored Carousels**: Removes sponsored carousel blocks (including ones rendered in closed Shadow DOM, which
+  are forced open)
+- **Placement Blocks**: Hides unified data-placement ad blocks and recommendation feeds, including dynamically
+  inserted ones (tracked via a debounced `MutationObserver`)
+- **Cart Cleanup**: Hides "Suggested items" upsells in the cart
+- **Offer/Announcement Banners**: Hides promotional banners and the "Treatment Tracker modal"
+- **Auto-Continue**: Clicks "Continue to checkout" when the button appears
+- **Default Tip**: Auto-selects the tip dialog's "Other" flow (opt-in behavior of the original script)
+
+### 📥 Instacart Installation
+
+1. Install a user script manager:
+   - [Tampermonkey](https://www.tampermonkey.net/)
+   - [Violentmonkey](https://violentmonkey.github.io/)
+   - [Greasemonkey](https://www.greasespot.net/) (Firefox)
+   - AdGuard (see the detailed steps in the [Paywall Bypass installation section](#-installation))
+2. Install the script:
+   - One-click: use the **Install Instacart Ad Remover** button above, or the
+     [Greasy Fork page](https://greasyfork.org/en/scripts/510324-instacart-ad-remover)
+   - Download [`instacart-ad-remover.js`](instacart-ad-remover.js) and import it into your user script manager, **or**
+   - Install from URL: `https://raw.githubusercontent.com/LanikSJ/userscripts/main/instacart-ad-remover.js`
+3. Verify installation:
+   - Visit [instacart.com](https://www.instacart.com/) or [instacart.ca](https://www.instacart.ca/)
+   - Sponsored listings, promo carousels, and ad placements should be hidden automatically
+
+### 🌐 Instacart Supported Sites
+
+| Site         | URL Pattern       |
+| ------------ | ----------------- |
+| Instacart US | `*.instacart.com` |
+| Instacart CA | `*.instacart.ca`  |
 
 ## 🔓 Paywall Bypass Script
 
@@ -249,65 +375,20 @@ All matched forums run the ProSilver style:
 | Sublime Text         | `www.sublimetext.com/forum`           |
 | Synthesia            | `*.synthesiagame.com/forum`           |
 
-## 🛒 Instacart Ad Remover
-
-A user script that blocks sponsored content, promo carousels, and dynamically inserted ad placements across
-Instacart (both `.com` and `.ca`). Also available on
-[Greasy Fork](https://greasyfork.org/en/scripts/510324-instacart-ad-remover). Current version: `72.0.0.260916`.
-
-**Note:** The script header includes `@downloadURL`, `@updateURL`, and `@homepageURL` metadata (pointing to GitHub),
-so your user script manager can check GitHub for updates automatically.
-
-### ✨ Instacart Features
-
-- **Search Page Ads**: Hides sponsored product listings and merges non-sponsored rows back into the main list
-- **Product Listing Ads**: Detects sponsored items via `data-cfp-eligible` markers and "promoted" image attributes
-- **Sponsored Carousels**: Removes sponsored carousel blocks (including ones rendered in closed Shadow DOM, which
-  are forced open)
-- **Placement Blocks**: Hides unified data-placement ad blocks and recommendation feeds, including dynamically
-  inserted ones (tracked via a debounced `MutationObserver`)
-- **Cart Cleanup**: Hides "Suggested items" upsells in the cart
-- **Offer/Announcement Banners**: Hides promotional banners and the "Treatment Tracker modal"
-- **Auto-Continue**: Clicks "Continue to checkout" when the button appears
-- **Default Tip**: Auto-selects the tip dialog's "Other" flow (opt-in behavior of the original script)
-
-### 📥 Instacart Installation
-
-1. Install a user script manager:
-   - [Tampermonkey](https://www.tampermonkey.net/)
-   - [Violentmonkey](https://violentmonkey.github.io/)
-   - [Greasemonkey](https://www.greasespot.net/) (Firefox)
-   - AdGuard (see the detailed steps in the [Paywall Bypass installation section](#-installation))
-2. Install the script:
-   - One-click: use the **Install Instacart Ad Remover** button above, or the
-     [Greasy Fork page](https://greasyfork.org/en/scripts/510324-instacart-ad-remover)
-   - Download [`instacart-ad-remover.js`](instacart-ad-remover.js) and import it into your user script manager, **or**
-   - Install from URL: `https://raw.githubusercontent.com/LanikSJ/userscripts/main/instacart-ad-remover.js`
-3. Verify installation:
-   - Visit [instacart.com](https://www.instacart.com/) or [instacart.ca](https://www.instacart.ca/)
-   - Sponsored listings, promo carousels, and ad placements should be hidden automatically
-
-### 🌐 Instacart Supported Sites
-
-| Site         | URL Pattern       |
-| ------------ | ----------------- |
-| Instacart US | `*.instacart.com` |
-| Instacart CA | `*.instacart.ca`  |
-
-### 📜 License
+## 📜 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-### 🤝 Contributing
+## 🤝 Contributing
 
 Contributions are welcome! If you find additional sites that could be supported or have improvements to suggest, please
 submit a pull request.
 
-### 🛠️ Scripts Directory
+## 🛠️ Scripts Directory
 
 The `/scripts/` directory contains utility tools for maintaining and validating the userscript:
 
-#### `domain_checker.py`
+### `domain_checker.py`
 
 A Python script that:
 
@@ -323,7 +404,7 @@ cd LanikSJ/userscripts/scripts
 python3 domain_checker.py
 ```
 
-#### `run_checker.sh`
+### `run_checker.sh`
 
 A shell script wrapper that:
 
@@ -340,7 +421,7 @@ cd LanikSJ/userscripts/scripts
 ./run_checker.sh
 ```
 
-#### `requirements.txt`
+### `requirements.txt`
 
 Python dependencies required for the domain validation tools:
 
@@ -356,7 +437,7 @@ These scripts help maintain the quality of the userscript by:
 - Providing automated validation before releases
 - Helping contributors verify their domain additions
 
-### ⚠️ Disclaimer
+## ⚠️ Disclaimer
 
 This script is intended for educational purposes and to access content that may be temporarily restricted.
 Please respect copyright and terms of service of content providers. Use at your own risk.

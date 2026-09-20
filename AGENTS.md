@@ -34,6 +34,16 @@ userscripts contains personal browser userscripts for site enhancements and auto
   grep -n 'Current version' README.md
   ```
 
+### README Ordering (MANDATORY)
+
+- Scripts are ordered alphabetically by script name (case-insensitive) everywhere they appear
+  together in `README.md`: the Quick Install buttons, the Table of Contents, the version table
+  (under "Versioning"), and the `##` section headings in the document body.
+- Alphabetical order: HTML5 Video Tools, Instacart Ad Remover, Paywall Bypass, phpBB Forum
+  Helper.
+- When adding a new script, insert its button, TOC entry (with subsections), version table row,
+  and body section in the correct alphabetical position, and keep the table columns aligned.
+
 ### Markdown Compliance Requirements (MANDATORY)
 
 - **ALL markdown files (.md) MUST pass markdownlint validation with zero errors or warnings**
