@@ -199,8 +199,7 @@ const goNextMV = () => {
 // "www.youtube.com" → "youtube", "www.news.co.uk" → "news"
 const getMainDomain = host => {
   const a = host.split('.');
-  let i = a.length - 2;
-  if (/^(com?|cc|tv|net|org|gov|edu)$/.test(a.at(i) || '')) i--;
+  const i = a.length - 2 - Number(/^(com?|cc|tv|net|org|gov|edu)$/.test(a.at(a.length - 2) || ''));
   return a.at(i) || host;
 };
 // URL that ends in a numeric episode id, e.g. /watch/123, /123/ or /123.html
