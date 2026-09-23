@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HTML5 Video Playing Tools
 // @namespace    https://greasyfork.org/users/7036
-// @version      2.2.1.260920
+// @version      2.2.2.260920
 // @description  Enable hotkeys for HTML5 playback: video screenshot; enable/disable picture-in-picture; copy cached video; send any video to full screen or browser window size; fast forward, rewind, pause/play, volume, skip to next video, skip to previous or next frame, set playback speed. Supported sites: YouTube, TED, Twitch, Vimeo, Dailymotion, Odysee, Kick, PeerTube; custom sites can be added (any URL containing "play")
 // @downloadURL  https://raw.githubusercontent.com/LanikSJ/userscripts/main/html5-video-playing-tools.js
 // @updateURL    https://raw.githubusercontent.com/LanikSJ/userscripts/main/html5-video-playing-tools.js
@@ -23,7 +23,6 @@
 // @inject-into  content
 // @run-at       document-start
 // @require      https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js
-// @require      https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js
 // @grant        GM_addStyle
 // @grant        GM_getValue
 // @grant        GM_registerMenuCommand
@@ -33,7 +32,7 @@
 // @GM_info
 // ==/UserScript==
 
-/* globals $, Vue, GM_addStyle, GM_getValue, GM_info, GM_registerMenuCommand, GM_setValue, unsafeWindow */
+/* globals Vue, GM_addStyle, GM_getValue, GM_info, GM_registerMenuCommand, GM_setValue, unsafeWindow */
 
 'use strict';
 
@@ -106,7 +105,7 @@ Tasto F: Vai al frame successivo (escluso YouTube)
 Tasto E: Vai al frame successivo (solo su YouTube)`
   }
 };
-const MSG = Object.prototype.hasOwnProperty.call(i18n, curLang) ? i18n[curLang] : i18n.en;
+const MSG = new Map(Object.entries(i18n)).get(curLang) || i18n.en;
 
 const w = unsafeWindow || window;
 // Target origin for frame messaging: use our own origin when the top frame is readable
@@ -124,10 +123,12 @@ const postToTop = msg => {
 };
 const { host, pathname: path } = location;
 const d = document, find = [].find;
-let $msg, v, _fp, _fs, by; // document.body
+let tipBox, tipTimer, v, _fp, _fs, by; // by: document.body
 const observeOpt = { childList: true, subtree: true };
 const noopFn = function () { /* intentionally empty */ };
 const validEl = e => e && e.offsetWidth > 1;
+// <video> and <audio> both expose the media element API
+const isMediaEl = el => !!el && (el.tagName === 'VIDEO' || el.tagName === 'AUDIO');
 const q = (css, p = d) => p.querySelector(css);
 const log = console.log.bind(
   console,
@@ -159,14 +160,15 @@ const hookAttachShadow = (cb) => {
     console.error('Hack attachShadow error', e);
   }
 };
+// read an inline or computed CSS value; only plain property names are accepted so
+// the style object is never indexed with a dynamic key
 const getStyle = (o, s) => {
-  if (typeof s !== 'string' || !/^[a-zA-Z-]+$/.test(s)) return; // avoid dynamic style lookups
-  if (o.style[s]) return o.style[s];
-  if (getComputedStyle) {
-    const x = getComputedStyle(o, '');
-    s = s.replace(/([A-Z])/g, '-$1').toLowerCase();
-    return x && x.getPropertyValue(s);
-  }
+  if (typeof s !== 'string' || !/^[a-zA-Z-]+$/.test(s)) return '';
+  s = s.replace(/([A-Z])/g, '-$1').toLowerCase();
+  const inline = o.style.getPropertyValue(s);
+  if (inline) return inline;
+  const cs = typeof getComputedStyle === 'function' ? getComputedStyle(o, '') : null;
+  return (cs && cs.getPropertyValue(s)) || '';
 };
 const doClick = e => {
   if (typeof e === 'string') e = q(e);
@@ -195,12 +197,18 @@ const goNextMV = () => {
   const d = +m[1] + 1;
   location.assign(s.slice(0, m.index) + d + m[2]);
 };
+// "www.youtube.com" → "youtube", "www.news.co.uk" → "news"
 const getMainDomain = host => {
   const a = host.split('.');
   let i = a.length - 2;
-  if (/^(com?|cc|tv|net|org|gov|edu)$/.test(a[i])) i--;
-  return i >= 0 ? a[i] : host;
+  if (/^(com?|cc|tv|net|org|gov|edu)$/.test(a.at(i) || '')) i--;
+  return a.at(i) || host;
 };
+// URL that ends in a numeric episode id, e.g. /watch/123, /123/ or /123.html
+const numIdRe = /[_\W]\d+$/;
+const numIdDirRe = /[_\W]\d+\/$/;
+const numIdExtRe = /[_\W]\d+\.[a-z]{3,8}$/;
+const isNumIdURL = p => numIdRe.test(p) || numIdDirRe.test(p) || numIdExtRe.test(p);
 const inRange = (n, min, max) => Math.max(min, n) === Math.min(n, max);
 const adjustRate = n => {
   n += v.playbackRate;
@@ -213,10 +221,10 @@ const adjustVolume = n => {
   if (inRange(n, 0, 1)) v.volume = +n.toFixed(2);
 };
 const tip = (msg) => {
-  if (!$msg?.get(0)?.offsetHeight) {
+  if (!tipBox || !tipBox.offsetHeight) {
     // build the tip element without injecting an HTML string
-    const el = d.createElement('div');
-    Object.assign(el.style, {
+    tipBox = d.createElement('div');
+    Object.assign(tipBox.style, {
       maxWidth: '455px',
       minWidth: '333px',
       background: '#EEE',
@@ -230,17 +238,18 @@ const tip = (msg) => {
       textAlign: 'center',
       fontSize: '15px',
       position: 'fixed',
-      zIndex: '2147483647'
+      zIndex: '2147483647',
+      transition: 'top .3s ease-in-out'
     });
-    $msg = $(el).appendTo(by);
+    by.appendChild(tipBox);
   }
   if (!msg?.length) return;
-  const len = msg.length * 15;
-  $msg.stop(true, true).text(msg)
-    .css({ width: `${len}px` })
-    .animate({ top: '190px' })
-    .animate({ top: '+=9px' }, 1900)
-    .animate({ top: '-30px' });
+  // slide the reused element in, hold it, then slide it back out
+  clearTimeout(tipTimer);
+  tipBox.textContent = msg;
+  tipBox.style.width = `${msg.length * 15}px`;
+  tipBox.style.top = '190px';
+  tipTimer = setTimeout(() => { tipBox.style.top = '-30px'; }, 1900);
 };
 const u = getMainDomain(host);
 const cfg = {
@@ -351,6 +360,11 @@ class FullPage {
   }
 }
 
+// <video>/<audio> inherit play() from the media prototype, two levels up the chain
+const getMediaProto = el => {
+  const p = Object.getPrototypeOf(Object.getPrototypeOf(el));
+  return p && p.play ? p : null;
+};
 const cacheMV = {
   check() {
     const buf = v.buffered;
@@ -363,7 +377,8 @@ const cacheMV = {
     v.currentTime = this.playPos;
     this.cached = !1;
     setTimeout(() => v.pause(), 33);
-    HTMLMediaElement.prototype.play = this.originalPlay;
+    const proto = getMediaProto(v);
+    if (proto && this.originalPlay) proto.play = this.originalPlay;
   },
   onChache() {
     if (!this.cached) return;
@@ -379,8 +394,11 @@ const cacheMV = {
     // start caching
     this.cached = true;
     v.pause();
-    this.originalPlay = HTMLMediaElement.prototype.play;
-    HTMLMediaElement.prototype.play = () => new Promise(noopFn);
+    const proto = getMediaProto(v);
+    if (proto) {
+      this.originalPlay = proto.play;
+      proto.play = () => new Promise(noopFn);
+    }
     this.playPos = v.currentTime;
     v.addEventListener('canplaythrough', this.onChache);
     this.check();
@@ -654,7 +672,7 @@ const app = {
         }
       }, false);
     }
-    $(v).one('canplay', () => {
+    v.addEventListener('canplay', () => {
       cfg.isLive = cfg.isLive || v.duration === Infinity;
       if (cfg.isLive) for (const k of [37, 1061, 39, 1063, 67, 77, 78, 88, 90]) actList.delete(k);
       else {
@@ -666,8 +684,8 @@ const app = {
 
       this.checkMV();
       bus.$emit('canplay');
-    });
-    $(by).keydown(this.hotKey.bind(this));
+    }, { once: true });
+    by.addEventListener('keydown', this.hotKey.bind(this));
 
     if (cfg.mvShell) this.shellEvent();
     else this.setShell();
@@ -681,7 +699,7 @@ const app = {
   init() {
     const rawAel = EventTarget.prototype.addEventListener;
     EventTarget.prototype.addEventListener = function (...args) {
-      const inMV = this instanceof HTMLMediaElement;
+      const inMV = isMediaEl(this);
       const block = inMV && (args[0] === 'dblclick' && !args[1].toString().includes('actList.get(1037)'));
       if (!block) return rawAel.apply(this, args);
     };
@@ -711,11 +729,13 @@ const app = {
   }
 };
 
-const router = {
-  ted() {
+// per-site configuration, keyed by main domain (see getMainDomain); a Map keeps the
+// host-derived key out of object property lookups
+const routers = new Map([
+  ['ted', () => {
     cfg.fullCSS = 'button[title=Fullscreen]';
-  },
-  youtube() {
+  }],
+  ['youtube', () => {
     GM_addStyle(
       `.gm-fp-body #player-container-inner{padding-top:0!important}
       .gm-fp-body #player-container-outer{
@@ -731,30 +751,33 @@ const router = {
     actList.delete(32);
     actList.set(69, actList.get(70)).delete(70); // key F >> E key
     actList.set(86, actList.get(67)).delete(67); // key C >> V key
-  },
-  twitch() {
+  }],
+  ['twitch', () => {
     cfg.isLive = !path.startsWith('/videos/');
     cfg.fullCSS = 'button[data-a-target=player-fullscreen-button]';
     cfg.webfullCSS = '.player-controls__right-control-group > div:nth-child(4) > button';
     cfg.playCSS = 'button[data-a-target=player-play-pause-button]';
-  },
-  vimeo() {
+  }],
+  ['vimeo', () => {
     cfg.fullCSS = 'button[aria-label*="Fullscreen"], button[title*="Fullscreen"]';
     cfg.playCSS = 'button[aria-label="Play"], button[aria-label="Pause"], button[title="Play"], button[title="Pause"]';
-  },
-  dailymotion() {
+  }],
+  ['dailymotion', () => {
     cfg.fullCSS = 'button[aria-label*="ullscreen"]';
-  },
-  kick() {
+  }],
+  ['kick', () => {
     cfg.isLive = !0;
     cfg.fullCSS = '[data-testid="full_screen_button"], button[aria-label*="ullscreen"]';
     cfg.playCSS = '[data-testid="play_pause_button"]';
-  }
-};
+  }]
+]);
 
 Reflect.defineProperty(navigator, 'plugins', {
   get() { return { length: 0 } }
 });
 GM_registerMenuCommand(MSG.helpMenuOption, alert.bind(w, MSG.helpBody));
-if (!router[u] || !router[u]()) app.init();
-if (!router[u] && !cfg.isNumURL) cfg.isNumURL = /[_\W]\d+(\/|\.[a-z]{3,8})?$/.test(path);
+// per-site setup runs first (when the site is known), then the generic init
+const route = routers.get(u);
+if (!route || !route()) app.init();
+// numeric episode URLs (e.g. /watch/123) are only guessed on unconfigured sites
+if (!route && !cfg.isNumURL) cfg.isNumURL = isNumIdURL(path);

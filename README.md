@@ -31,7 +31,7 @@ and `@homepageURL` metadata so user script managers can detect and install updat
 
 | Script               | Current Version |
 | -------------------- | --------------- |
-| HTML5 Video Tools    | `2.2.1.260920`  |
+| HTML5 Video Tools    | `2.2.2.260920`  |
 | Instacart Ad Remover | `72.0.0.260916` |
 | Paywall Bypass       | `2.0.6.260916`  |
 | phpBB Forum Helper   | `1.2.5.260915`  |
@@ -71,7 +71,7 @@ and `@homepageURL` metadata so user script managers can detect and install updat
 ## 🎬 HTML5 Video Playing Tools
 
 Adds playback hotkeys to HTML5 video players across mainstream video and live streaming sites, with
-per-site UI integration. Current version: `2.2.1.260920`.
+per-site UI integration. Current version: `2.2.2.260920`.
 
 ### ✨ HTML5 Video Features
 
