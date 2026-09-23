@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HTML5 Video Playing Tools
 // @namespace    https://greasyfork.org/users/7036
-// @version      2.2.0.260920
+// @version      2.2.1.260920
 // @description  Enable hotkeys for HTML5 playback: video screenshot; enable/disable picture-in-picture; copy cached video; send any video to full screen or browser window size; fast forward, rewind, pause/play, volume, skip to next video, skip to previous or next frame, set playback speed. Supported sites: YouTube, TED, Twitch, Vimeo, Dailymotion, Odysee, Kick, PeerTube; custom sites can be added (any URL containing "play")
 // @downloadURL  https://raw.githubusercontent.com/LanikSJ/userscripts/main/html5-video-playing-tools.js
 // @updateURL    https://raw.githubusercontent.com/LanikSJ/userscripts/main/html5-video-playing-tools.js
@@ -33,7 +33,7 @@
 // @GM_info
 // ==/UserScript==
 
-/* globals jQuery, $, Vue */
+/* globals $, Vue, GM_addStyle, GM_getValue, GM_info, GM_registerMenuCommand, GM_setValue, unsafeWindow */
 
 'use strict';
 
@@ -106,14 +106,27 @@ Tasto F: Vai al frame successivo (escluso YouTube)
 Tasto E: Vai al frame successivo (solo su YouTube)`
   }
 };
-const MSG = i18n[curLang] || i18n.en;
+const MSG = Object.prototype.hasOwnProperty.call(i18n, curLang) ? i18n[curLang] : i18n.en;
 
 const w = unsafeWindow || window;
+// Target origin for frame messaging: use our own origin when the top frame is readable
+// (same origin), otherwise fall back to '*' because cross-origin player frames only accept
+// a wildcard target origin.
+const topOrigin = (() => {
+  try {
+    return top.location.origin;
+  } catch (e) {
+    return '*';
+  }
+})();
+const postToTop = msg => {
+  if (top !== self) top.postMessage(msg, topOrigin);
+};
 const { host, pathname: path } = location;
 const d = document, find = [].find;
 let $msg, v, _fp, _fs, by; // document.body
 const observeOpt = { childList: true, subtree: true };
-const noopFn = function () { };
+const noopFn = function () { /* intentionally empty */ };
 const validEl = e => e && e.offsetWidth > 1;
 const q = (css, p = d) => p.querySelector(css);
 const log = console.log.bind(
@@ -147,6 +160,7 @@ const hookAttachShadow = (cb) => {
   }
 };
 const getStyle = (o, s) => {
+  if (typeof s !== 'string' || !/^[a-zA-Z-]+$/.test(s)) return; // avoid dynamic style lookups
   if (o.style[s]) return o.style[s];
   if (getComputedStyle) {
     const x = getComputedStyle(o, '');
@@ -156,16 +170,20 @@ const getStyle = (o, s) => {
 };
 const doClick = e => {
   if (typeof e === 'string') e = q(e);
-  if (e) { e.click ? e.click() : e.dispatchEvent(new MouseEvent('click')) };
+  if (e) {
+    if (e.click) e.click();
+    else e.dispatchEvent(new MouseEvent('click'));
+  }
 };
 const clickDualButton = btn => { // 2-in-1 button, Element.previousElementSibling
-  !btn.nextElementSibling || getStyle(btn, 'display') !== 'none' ? doClick(btn) : doClick(btn.nextElementSibling);
+  if (!btn.nextElementSibling || getStyle(btn, 'display') !== 'none') doClick(btn);
+  else doClick(btn.nextElementSibling);
 };
 const polling = (cb, condition, stop = true) => {
   const fn = typeof condition === 'string' ? q.bind(null, condition) : condition;
   const t = setInterval(() => {
     if (fn()) {
-      stop && clearInterval(t);
+      if (stop) clearInterval(t);
       cb();
     }
   }, 300);
@@ -181,12 +199,12 @@ const getMainDomain = host => {
   const a = host.split('.');
   let i = a.length - 2;
   if (/^(com?|cc|tv|net|org|gov|edu)$/.test(a[i])) i--;
-  return a[i];
+  return i >= 0 ? a[i] : host;
 };
-const inRange = (n, min, max) => Math.max(min, n) == Math.min(n, max);
+const inRange = (n, min, max) => Math.max(min, n) === Math.min(n, max);
 const adjustRate = n => {
   n += v.playbackRate;
-  if (n < 0.1) v.playbackRate = .1;
+  if (n < 0.1) v.playbackRate = 0.1;
   else if (n > 16) v.playbackRate = 16;
   else v.playbackRate = +n.toFixed(2);
 };
@@ -195,7 +213,27 @@ const adjustVolume = n => {
   if (inRange(n, 0, 1)) v.volume = +n.toFixed(2);
 };
 const tip = (msg) => {
-  if (!$msg?.get(0)?.offsetHeight) $msg = $('<div style="max-width:455px;min-width:333px;background:#EEE;color:#111;height:22px;top:-30px;left:50%;transform:translate(-50%, 0); border-radius:8px;border:1px solid orange;text-align:center;font-size:15px;position:fixed;z-index:2147483647"></div>').appendTo(by);
+  if (!$msg?.get(0)?.offsetHeight) {
+    // build the tip element without injecting an HTML string
+    const el = d.createElement('div');
+    Object.assign(el.style, {
+      maxWidth: '455px',
+      minWidth: '333px',
+      background: '#EEE',
+      color: '#111',
+      height: '22px',
+      top: '-30px',
+      left: '50%',
+      transform: 'translate(-50%, 0)',
+      borderRadius: '8px',
+      border: '1px solid orange',
+      textAlign: 'center',
+      fontSize: '15px',
+      position: 'fixed',
+      zIndex: '2147483647'
+    });
+    $msg = $(el).appendTo(by);
+  }
   if (!msg?.length) return;
   const len = msg.length * 15;
   $msg.stop(true, true).text(msg)
@@ -213,7 +251,7 @@ const cfg = {
   isNumURL: !1 // URL with numeric episodes
 };
 const bus = new Vue();
-if (window.onurlchange === void 0) {
+if (typeof window.onurlchange === 'undefined') {
   history.pushState = (f => function pushState() {
     const ret = f.apply(this, arguments);
     window.dispatchEvent(new Event('pushstate'));
@@ -245,7 +283,8 @@ class FullScreen {
       d.fullscreenElement || d.webkitFullscreenElement || d.mozFullScreenElement);
   }
   toggle() {
-    FullScreen.isFull() ? this.exit() : this.enter();
+    if (FullScreen.isFull()) this.exit();
+    else this.enter();
   }
 }
 
@@ -298,13 +337,13 @@ class FullPage {
     bus.$emit('switchFP', !this._isFull);
     by.classList.toggle('gm-fp-body');
     let e = v;
-    while (e != this.container) {
+    while (e !== this.container) {
       e.classList.toggle('gm-fp-innerBox');
       e = e.parentNode;
     }
     e.classList.toggle('gm-fp-wrapper');
     e = e.parentNode;
-    while (e != by) {
+    while (e !== by) {
       e.classList.toggle('gm-fp-zTop');
       e = e.parentNode;
     }
@@ -323,8 +362,8 @@ const cacheMV = {
     v.removeEventListener('canplaythrough', this.onChache);
     v.currentTime = this.playPos;
     this.cached = !1;
-    setTimeout(_ => v.pause(), 33);
-    HTMLMediaElement.prototype.play = this.rawPlay;
+    setTimeout(() => v.pause(), 33);
+    HTMLMediaElement.prototype.play = this.originalPlay;
   },
   onChache() {
     if (!this.cached) return;
@@ -340,7 +379,7 @@ const cacheMV = {
     // start caching
     this.cached = true;
     v.pause();
-    this.rawPlay = HTMLMediaElement.prototype.play;
+    this.originalPlay = HTMLMediaElement.prototype.play;
     HTMLMediaElement.prototype.play = () => new Promise(noopFn);
     this.playPos = v.currentTime;
     v.addEventListener('canplaythrough', this.onChache);
@@ -350,9 +389,19 @@ const cacheMV = {
 };
 cacheMV.onChache = cacheMV.onChache.bind(cacheMV);
 
+// shared full screen helpers: prefer the site's own button when the native API is unavailable
+const toggleFS = () => {
+  if (_fs) _fs.toggle();
+  else clickDualButton(cfg.btnFS);
+};
+const toggleFP = () => {
+  if (_fp) _fp.toggle();
+  else clickDualButton(cfg.btnFP);
+};
+
 const actList = new Map();
-actList.set(90, _ => { // key Z: toggle boosted speed
-  if (v.playbackRate == 1 || v.playbackRate == 0) {
+actList.set(90, () => { // key Z: toggle boosted speed
+  if (v.playbackRate === 1 || v.playbackRate === 0) {
     v.playbackRate = +localStorage.mvPlayRate || 1.3;
   } else {
     // localStorage.mvPlayRate = v.playbackRate;
@@ -363,34 +412,36 @@ actList.set(90, _ => { // key Z: toggle boosted speed
   .set(67, adjustRate.bind(null, 0.1)) // key C
   .set(40, adjustVolume.bind(null, -0.1)) // down: lower volume
   .set(38, adjustVolume.bind(null, 0.1)) // up: raise volume
-  .set(37, _ => { v.currentTime -= 5 }) // key left arrow
-  .set(37 + 1024, _ => { v.currentTime -= 20 }) // key shift + left arrow
-  .set(39, _ => { v.currentTime += 5 }) // key right arrow
-  .set(39 + 1024, _ => { v.currentTime += 20 }) // key shift + right arrow
-  .set(68, _ => { v.currentTime -= 0.03; v.pause() }) // key D: previous frame
-  .set(70, _ => { v.currentTime += 0.03; v.pause() }) // key F: next frame
-  .set(32, _ => {  // key space
+  .set(37, () => { v.currentTime -= 5 }) // key left arrow
+  .set(37 + 1024, () => { v.currentTime -= 20 }) // key shift + left arrow
+  .set(39, () => { v.currentTime += 5 }) // key right arrow
+  .set(39 + 1024, () => { v.currentTime += 20 }) // key shift + right arrow
+  .set(68, () => { v.currentTime -= 0.03; v.pause() }) // key D: previous frame
+  .set(70, () => { v.currentTime += 0.03; v.pause() }) // key F: next frame
+  .set(32, () => {  // key space
     if (cfg.btnPlay) clickDualButton(cfg.btnPlay);
-    else v.paused ? v.play() : v.pause();
+    else if (v.paused) v.play();
+    else v.pause();
   })
-  .set(13, _ => {  // Enter key. Full screen
-    _fs ? _fs.toggle() : clickDualButton(cfg.btnFS);
+  .set(13, () => {  // Enter key. Full screen
+    toggleFS();
   })
-  .set(13 + 1024, _ => { // web full screen
-    self != top ? top.postMessage({ id: 'gm-h5-toggle-iframeWebFull' }, '*')
-      : _fp ? _fp.toggle() : clickDualButton(cfg.btnFP);
+  .set(13 + 1024, () => { // web full screen
+    if (self !== top) postToTop({ id: 'gm-h5-toggle-iframeWebFull' });
+    else toggleFP();
   })
   .set(27 + 1024, noopFn)  // ignore key shift + esc
-  .set(27, ev => {  // key esc
+  .set(27, () => {  // key esc
     if (FullScreen.isFull()) {
-      _fs ? _fs.exit() : clickDualButton(cfg.btnFS);
-    } else if (self != top) {
-      top.postMessage({ id: 'gm-h5-is-iframeWebFull' }, '*');
+      if (_fs) _fs.exit();
+      else clickDualButton(cfg.btnFS);
+    } else if (self !== top) {
+      postToTop({ id: 'gm-h5-is-iframeWebFull' });
     } else if (FullPage.isFull(v)) {
-      _fp ? _fp.toggle() : clickDualButton(cfg.btnFP);
+      toggleFP();
     }
   })
-  .set(73, _ => { // key I: picture-in-picture mode
+  .set(73, () => { // key I: picture-in-picture mode
     if (!d.pictureInPictureElement) {
       v.requestPictureInPicture().catch(err => {
         alert(MSG.cantOpenPIP + err)
@@ -401,7 +452,7 @@ actList.set(90, _ => { // key Z: toggle boosted speed
       });
     }
   })
-  .set(80, _ => { // key P: screenshot
+  .set(80, () => { // key P: screenshot
     const canvas = d.createElement('canvas');
     canvas.width = v.videoWidth;
     canvas.height = v.videoHeight;
@@ -421,11 +472,12 @@ actList.set(90, _ => { // key Z: toggle boosted speed
       URL.revokeObjectURL(dataURL);
     });
   })
-  .set(77, _ => { // M: cache video
-    cacheMV.cached ? cacheMV.finish() : cacheMV.exec();
+  .set(77, () => { // M: cache video
+    if (cacheMV.cached) cacheMV.finish();
+    else cacheMV.exec();
   })
-  .set(78, _ => { // N: next episode
-    if (self != top) top.postMessage({ id: 'gm-h5-play-next' }, '*');
+  .set(78, () => { // N: next episode
+    if (self !== top) postToTop({ id: 'gm-h5-play-next' });
     else if (cfg.btnNext) doClick(cfg.btnNext);
     else if (cfg.isNumURL) goNextMV();
   });
@@ -441,21 +493,22 @@ const app = {
     };
     const e = cfg.isClickOnVideo ? v : cfg.mvShell;
     e.addEventListener('mousedown', ev => {
-      if (1 == ev.button) {
+      if (ev.button === 1) {
         ev.preventDefault();
         ev.stopPropagation();
         ev.stopImmediatePropagation();
         if (!cfg.isLive) {
-          actList.has(39) ? actList.get(39)() : v.currentTime += 5;
+          if (actList.has(39)) actList.get(39)();
+          else v.currentTime += 5;
         }
       }
     });
-    !cfg.disableDBLClick && e.addEventListener('dblclick', fn);
+    if (!cfg.disableDBLClick) e.addEventListener('dblclick', fn);
   },
   setShell() {
     const e = this.getDPlayer() || this.getArtplayer() || this.getVjsPlayer() ||
       (cfg.shellCSS && q(cfg.shellCSS)) ||
-      (top != self ? by : FullPage.getPlayerContainer(v));
+      (top !== self ? by : FullPage.getPlayerContainer(v));
     if (e && cfg.mvShell !== e) {
       cfg.mvShell = e;
       this.shellEvent();
@@ -464,13 +517,13 @@ const app = {
   checkMV() {
     if (this.vList) {
       const e = this.findMV();
-      if (e && e != v) {
+      if (e && e !== v) {
         v = e;
         cfg.btnPlay = cfg.btnNext = cfg.btnFP = cfg.btnFS = _fs = _fp = null;
         if (!cfg.isLive && GM_getValue('remberRate', true)) {
           v.playbackRate = +localStorage.mvPlayRate || 1;
-          v.addEventListener('ratechange', ev => {
-            if (v.playbackRate && v.playbackRate != 1) localStorage.mvPlayRate = v.playbackRate;
+          v.addEventListener('ratechange', () => {
+            if (v.playbackRate && v.playbackRate !== 1) localStorage.mvPlayRate = v.playbackRate;
           });
         }
         this.setShell();
@@ -508,14 +561,22 @@ const app = {
     }
     return e;
   },
+  // true when the key event must be ignored (modifiers, form fields, unhandled shift combos)
+  ignoreKey(e, t) {
+    if (e.ctrlKey || e.metaKey || e.altKey || t.contentEditable === 'true' || // e.isComposing
+      /INPUT|TEXTAREA|SELECT/.test(t.nodeName)) return true;
+    if (e.shiftKey && ![13, 37, 39, 27].includes(e.keyCode)) return true;
+    return false;
+  },
+  // space/arrows are left to the site's own player controls when typed inside the shell
+  isShellKey(e, t) {
+    return !e.shiftKey && cfg.mvShell && cfg.mvShell.contains(t) &&
+      [32, 37, 39].includes(e.keyCode);
+  },
   hotKey(e) {
     const t = e.target;
-    if (e.ctrlKey || e.metaKey || e.altKey || t.contentEditable == 'true' || // e.isComposing
-      /INPUT|TEXTAREA|SELECT/.test(t.nodeName)) return;
-    if (e.shiftKey && ![13, 37, 39].includes(e.keyCode)) return;
-    if (e.shiftKey && e.keyCode == 27) return;
-    if (!this.checkMV()) return;
-    if (!e.shiftKey && cfg.mvShell && cfg.mvShell.contains(t) && [32, 37, 39].includes(e.keyCode)) return;
+    if (this.ignoreKey(e, t)) return;
+    if (!this.checkMV() || this.isShellKey(e, t)) return;
     const key = e.shiftKey ? e.keyCode + 1024 : e.keyCode;
     if (actList.has(key)) {
       e.stopImmediatePropagation();
@@ -528,7 +589,7 @@ const app = {
   checkUI() {
     if (cfg.webfullCSS && !validEl(cfg.btnFP)) cfg.btnFP = q(cfg.webfullCSS);
     if (cfg.btnFP) _fp = null;
-    else if (!_fp && self == top) _fp = new FullPage(cfg.mvShell);
+    else if (!_fp && self === top) _fp = new FullPage(cfg.mvShell);
 
     if (cfg.fullCSS && !validEl(cfg.btnFS)) cfg.btnFS = q(cfg.fullCSS);
     if (cfg.btnFS) _fs = null;
@@ -538,7 +599,7 @@ const app = {
     if (cfg.playCSS && !validEl(cfg.btnPlay)) cfg.btnPlay = q(cfg.playCSS);
   },
   onGrowVList() {
-    if (this.vList.length == this.vCount) return;
+    if (this.vList.length === this.vCount) return;
     if (this.viewObserver) {
       for (let e of this.vList) {
         if (!this.vSet.has(e)) this.viewObserver.observe(e);
@@ -557,7 +618,7 @@ const app = {
   onIntersection(entries) {
     if (this.vList.length < 2) return;
     const entry = find.call(entries, k => k.isIntersecting);
-    if (!entry || v == entry.target) return;
+    if (!entry || v === entry.target) return;
     v = entry.target;
     _fs = new FullScreen(v);
     _fp = new FullPage(v);
@@ -576,30 +637,30 @@ const app = {
     log('bind event\n', v);
     bus.$emit('foundMV');
     const bRate = gmFuncOfCheckMenu(MSG.rememberRateMenuOption, 'remberRate');
-    window.addEventListener('urlchange', async (info) => { //TM event: info.url
+    window.addEventListener('urlchange', async () => {
       await sleep(990);
       this.checkMV();
       if (bRate) v.playbackRate = +localStorage.mvPlayRate || 1;
       bus.$emit('urlchange');
     });
-    if (top != self) {
-      top.postMessage({ id: 'gm-h5-init-MVframe' }, '*');
+    if (top !== self) {
+      postToTop({ id: 'gm-h5-init-MVframe' });
       window.addEventListener("message", ev => {
         if (!ev.source || !ev.data || !ev.data.id) return;
         switch (ev.data.id) {
           case 'gm-h5-toggle-fullScreen':
-            _fs ? _fs.toggle() : clickDualButton(cfg.btnFS);
+            toggleFS();
             break;
         }
       }, false);
     }
-    $(v).one('canplay', ev => {
-      cfg.isLive = cfg.isLive || v.duration == Infinity;
+    $(v).one('canplay', () => {
+      cfg.isLive = cfg.isLive || v.duration === Infinity;
       if (cfg.isLive) for (const k of [37, 1061, 39, 1063, 67, 77, 78, 88, 90]) actList.delete(k);
       else {
         if (bRate) v.playbackRate = +localStorage.mvPlayRate || 1;
-        v.addEventListener('ratechange', ev => {
-          if (bRate && v.playbackRate && v.playbackRate != 1) localStorage.mvPlayRate = v.playbackRate;
+        v.addEventListener('ratechange', () => {
+          if (bRate && v.playbackRate && v.playbackRate !== 1) localStorage.mvPlayRate = v.playbackRate;
         });
       }
 
@@ -608,7 +669,8 @@ const app = {
     });
     $(by).keydown(this.hotKey.bind(this));
 
-    cfg.mvShell ? this.shellEvent() : this.setShell();
+    if (cfg.mvShell) this.shellEvent();
+    else this.setShell();
     this.checkUI();
     if (cfg.multipleV) {
       new MutationObserver(this.onGrowVList.bind(this)).observe(by, observeOpt);
@@ -620,7 +682,7 @@ const app = {
     const rawAel = EventTarget.prototype.addEventListener;
     EventTarget.prototype.addEventListener = function (...args) {
       const inMV = this instanceof HTMLMediaElement;
-      const block = inMV && (args[0] == 'dblclick' && !args[1].toString().includes('actList.get(1037)'));
+      const block = inMV && (args[0] === 'dblclick' && !args[1].toString().includes('actList.get(1037)'));
       if (!block) return rawAel.apply(this, args);
     };
     this.vList = d.getElementsByTagName('video');
@@ -635,7 +697,9 @@ const app = {
       bus.$emit('addShadowRoot', shadowRoot);
       await sleep(600);
       if (v) return;
-      if (v = q('video', shadowRoot)) { // v.getRootNode() == shadowRoot
+      const mv = q('video', shadowRoot); // mv.getRootNode() == shadowRoot
+      if (mv) {
+        v = mv;
         log('Found MV in ShadowRoot\n', v, shadowRoot);
         if (!cfg.shellCSS) cfg.mvShell = shadowRoot.host;
         this.bindEvent();
