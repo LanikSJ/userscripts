@@ -106,22 +106,22 @@ per-site UI integration. Current version: `2.2.1.260920`.
 
 ### 🎮 HTML5 Video Hotkeys
 
-| Key                | Action                                  |
-| ------------------ | --------------------------------------- |
-| `←` / `→`          | Rewind / fast forward 5 seconds         |
-| `Shift` + `←` / `→`| Rewind / fast forward 20 seconds        |
-| `↑` / `↓`          | Raise / lower the volume                |
-| `Space`            | Pause / play                            |
-| `Enter`            | Toggle full screen                      |
-| `Shift` + `Enter`  | Toggle web (page) full screen           |
-| `Esc`              | Exit full screen                        |
-| `P`                | Take a screenshot                       |
-| `I`                | Toggle picture-in-picture               |
-| `M`                | Enable/disable video caching            |
-| `N`                | Play the next video/episode             |
-| `C` / `X`          | Speed up / slow down by 0.1             |
-| `Z`                | Toggle boosted playback speed           |
-| `D` / `F`          | Previous / next frame                   |
+| Key                 | Action                           |
+| ------------------- | -------------------------------- |
+| `←` / `→`           | Rewind / fast forward 5 seconds  |
+| `Shift` + `←` / `→` | Rewind / fast forward 20 seconds |
+| `↑` / `↓`           | Raise / lower the volume         |
+| `Space`             | Pause / play                     |
+| `Enter`             | Toggle full screen               |
+| `Shift` + `Enter`   | Toggle web (page) full screen    |
+| `Esc`               | Exit full screen                 |
+| `P`                 | Take a screenshot                |
+| `I`                 | Toggle picture-in-picture        |
+| `M`                 | Enable/disable video caching     |
+| `N`                 | Play the next video/episode      |
+| `C` / `X`           | Speed up / slow down by 0.1      |
+| `Z`                 | Toggle boosted playback speed    |
+| `D` / `F`           | Previous / next frame            |
 
 Notes: YouTube remaps some keys (`V` for speed and `E` for next frame); see the
 "Hotkeys list" menu entry for the complete per-site mapping.
