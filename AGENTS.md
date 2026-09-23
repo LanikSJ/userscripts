@@ -34,6 +34,16 @@ userscripts contains personal browser userscripts for site enhancements and auto
   grep -n 'Current version' README.md
   ```
 
+### README Ordering (MANDATORY)
+
+- Scripts are ordered alphabetically by script name (case-insensitive) everywhere they appear
+  together in `README.md`: the Quick Install buttons, the Table of Contents, the version table
+  (under "Versioning"), and the `##` section headings in the document body.
+- Alphabetical order: HTML5 Video Tools, Instacart Ad Remover, Paywall Bypass, phpBB Forum
+  Helper.
+- When adding a new script, insert its button, TOC entry (with subsections), version table row,
+  and body section in the correct alphabetical position, and keep the table columns aligned.
+
 ### Markdown Compliance Requirements (MANDATORY)
 
 - **ALL markdown files (.md) MUST pass markdownlint validation with zero errors or warnings**
@@ -51,6 +61,22 @@ userscripts contains personal browser userscripts for site enhancements and auto
   - Proper table formatting when applicable
 - Use `markdownlint --fix <filename>` for auto-fixable issues when available
 - Validate markdown files in CI/CD pipelines where applicable
+
+### Static Analysis Hygiene
+
+- Keep userscripts free of findings in the Security, Error prone, Best
+  practice and Code complexity categories of the analyzer.
+- Never read a property with a dynamic key: `obj[key]` is reported as a
+  "Generic Object Injection Sink".
+  Use `Map#get`, `Array#at` or `style.getPropertyValue()` instead.
+- Avoid regular expressions with optional groups or alternations around
+  quantifiers ("Unsafe Regular Expression"); split them into simple patterns.
+- Never list host-page globals (jQuery `$`, page bundles) in the
+  `/* globals */` comment: only libraries declared through `@require` belong
+  there. Read anything else from `unsafeWindow` and fall back to native DOM
+  APIs so the script still works when the page does not provide them.
+- Keep every function under 50 lines and prefer small helpers over long
+  methods.
 
 ## Development Guidelines
 
