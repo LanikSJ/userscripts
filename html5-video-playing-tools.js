@@ -192,10 +192,9 @@ const polling = (cb, condition, stop = true) => {
   return t;
 };
 const goNextMV = () => {
-  const s = location.pathname;
-  const m = s.match(/(\d+)(\D*)$/);
+  const m = /(\d+)(\D*)$/.exec(location.pathname);
   const d = +m[1] + 1;
-  location.assign(s.slice(0, m.index) + d + m[2]);
+  location.assign(location.pathname.slice(0, m.index) + d + m[2]);
 };
 // "www.youtube.com" → "youtube", "www.news.co.uk" → "news"
 const getMainDomain = host => {
