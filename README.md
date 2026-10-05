@@ -9,6 +9,8 @@ A collection of user scripts for AdGuard, TamperMonkey, and ViolentMonkey to enh
 
 ## 🚀 Quick Install
 
+[![Install Script](https://img.shields.io/badge/Install-GitHub%20Enhancer%20Tools-purple?style=for-the-badge&logo=greasyfork)](https://raw.githubusercontent.com/LanikSJ/userscripts/main/github-enhancer-tools.js)
+
 [![Install Script](https://img.shields.io/badge/Install-HTML5%20Video%20Playing%20Tools-red?style=for-the-badge&logo=greasyfork)](https://raw.githubusercontent.com/LanikSJ/userscripts/main/html5-video-playing-tools.js)
 
 [![Install Script](https://img.shields.io/badge/Install-Instacart%20Ad%20Remover-orange?style=for-the-badge&logo=greasyfork)](https://raw.githubusercontent.com/LanikSJ/userscripts/main/instacart-ad-remover.js)
@@ -17,9 +19,9 @@ A collection of user scripts for AdGuard, TamperMonkey, and ViolentMonkey to enh
 
 [![Install Script](https://img.shields.io/badge/Install-phpBB%20Forum%20Helper-blue?style=for-the-badge&logo=greasyfork)](https://raw.githubusercontent.com/LanikSJ/userscripts/main/php-forum-helper.js)
 
-**One-click installation:** Click the buttons above to install the HTML5 Video Playing Tools, the
-Instacart Ad Remover, the Paywall Bypass Script, or the phpBB Forum Helper directly to your browser
-extension.
+**One-click installation:** Click the buttons above to install the GitHub Enhancer Tools, the HTML5
+Video Playing Tools, the Instacart Ad Remover, the Paywall Bypass Script, or the phpBB Forum Helper
+directly to your browser extension.
 
 **Manual installation:** Download the script file and import it into your user script manager.
 
@@ -31,6 +33,7 @@ and `@homepageURL` metadata so user script managers can detect and install updat
 
 | Script               | Current Version |
 | -------------------- | --------------- |
+| GitHub Enhancer      | `1.5.5.261005`  |
 | HTML5 Video Tools    | `2.2.2.260920`  |
 | Instacart Ad Remover | `72.0.0.260916` |
 | Paywall Bypass       | `2.0.6.260916`  |
@@ -41,6 +44,10 @@ and `@homepageURL` metadata so user script managers can detect and install updat
 - [📱 userscripts](#-userscripts)
 - [🚀 Quick Install](#-quick-install)
   - [🔖 Versioning](#-versioning)
+- [🧰 GitHub Enhancer Tools](#-github-enhancer-tools)
+  - [✨ GitHub Enhancer Features](#-github-enhancer-features)
+  - [📥 GitHub Enhancer Installation](#-github-enhancer-installation)
+  - [🌐 GitHub Enhancer Supported Sites](#-github-enhancer-supported-sites)
 - [🎬 HTML5 Video Playing Tools](#-html5-video-playing-tools)
   - [✨ HTML5 Video Features](#-html5-video-features)
   - [📥 HTML5 Video Installation](#-html5-video-installation)
@@ -67,6 +74,49 @@ and `@homepageURL` metadata so user script managers can detect and install updat
 - [📜 License](#-license)
 - [🤝 Contributing](#-contributing)
 - [⚠️ Disclaimer](#️-disclaimer)
+
+## 🧰 GitHub Enhancer Tools
+
+A user script that adds one-click enhancements to GitHub repository pages: a repository size badge,
+homepage and cover-image links, file and folder downloads, HTML file previews, and JsDelivr
+browsing, plus an edge-to-edge wide page layout. Current version: `1.5.5.261005`.
+
+### ✨ GitHub Enhancer Features
+
+- **Wide Layout**: Expands repository pages to use the full browser width edge-to-edge
+- **Repo Header Buttons**: Shows the repository size badge (KB/MB/GB via the GitHub API), a link to
+  the GitHub Pages homepage, and a link to the repository cover (Open Graph) image
+- **File & Folder Downloads**: Adds download icons to the file browser — folders open DownGit and
+  files are fetched directly from `raw.githubusercontent.com`
+- **HTML Preview**: Adds a preview button on `.html`/`.htm` file pages that opens the file through
+  htmlpreview.github.io
+- **JsDelivr Button**: Adds a button that opens the current file or folder on the jsDelivr CDN
+- **Soft-Navigation Aware**: Re-applies all buttons after GitHub's Turbo soft navigation
+
+### 📥 GitHub Enhancer Installation
+
+1. Install a user script manager:
+   - [Tampermonkey](https://www.tampermonkey.net/)
+   - [Violentmonkey](https://violentmonkey.github.io/)
+   - [Greasemonkey](https://www.greasespot.net/) (Firefox)
+   - AdGuard (see the detailed steps in the [Paywall Bypass installation section](#-installation))
+2. Install the script:
+   - One-click: use the **Install GitHub Enhancer Tools** button above
+   - Download [`github-enhancer-tools.js`](github-enhancer-tools.js) and import it into your user
+     script manager, **or**
+   - Install from URL:
+     `https://raw.githubusercontent.com/LanikSJ/userscripts/main/github-enhancer-tools.js`
+3. Verify installation:
+   - Visit any repository (e.g.
+     [github.com/LanikSJ/userscripts](https://github.com/LanikSJ/userscripts))
+   - The size badge, homepage, and cover links appear next to the repository name
+   - File rows show download icons, and file pages show the JsDelivr/Preview buttons
+
+### 🌐 GitHub Enhancer Supported Sites
+
+| Site   | URL Pattern    |
+| ------ | -------------- |
+| GitHub | `github.com/*` |
 
 ## 🎬 HTML5 Video Playing Tools
 
