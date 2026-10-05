@@ -3,7 +3,7 @@
 // @description        Enhanced Features: One-click access to repository homepage, repository cover and repository analysis; one-click intelligent repository analysis; one-click download of files and folders; one-click preview of HTML files; one-click browsing of repositories via JSDelivr.
 // @namespace          https://github.com/LanikSJ/github-enhancer-tools
 // @author             RunningCheese and LanikSJ
-// @version            1.5.4.261003
+// @version            1.5.5.261005
 // @match              https://github.com/*
 // @icon               https://t1.gstatic.cn/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://github.com
 // @license            MIT
@@ -41,6 +41,34 @@
 
   const homepageIconUrl = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDE2IDE2Ij48cmVjdCB4PSIwLjc1IiB5PSIwLjc1IiB3aWR0aD0iMTQuNSIgaGVpZ2h0PSIxNC41IiByeD0iMyIgc3Ryb2tlPSIjMUYyMzI4IiBzdHJva2Utd2lkdGg9IjEiLz48cGF0aCBkPSJNMyA4bDUtNC41IDUgNC41IiBzdHJva2U9IiMxRjIzMjgiIHN0cm9rZS13aWR0aD0iMS4yIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNNC41IDcuNXY2aDN2LTMuNWgxdjMuNWgzdi02IiBzdHJva2U9IiMxRjIzMjgiIHN0cm9rZS13aWR0aD0iMS4yIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+'
   const coverIconUrl = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDE2IDE2Ij48cmVjdCB4PSIwLjc1IiB5PSIwLjc1IiB3aWR0aD0iMTQuNSIgaGVpZ2h0PSIxNC41IiByeD0iMyIgc3Ryb2tlPSIjMUYyMzI4IiBzdHJva2Utd2lkdGg9IjEiLz48Y2lyY2xlIGN4PSI1LjUiIGN5PSI1LjUiIHI9IjEuNCIgc3Ryb2tlPSIjMUYyMzI4IiBzdHJva2Utd2lkdGg9IjEiLz48cGF0aCBkPSJNMi41IDEyLjVsMy00IDIuNSAzIDItMi41IDMuNSA0IiBzdHJva2U9IiMxRjIzMjgiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHlsZT0ic3Ryb2tlLWxpbmVqb2luOnJvdW5kIi8+PC9zdmc+'
+
+  // ====== Shared Safety Helpers ======
+
+  function openHttpsUrl(target) {
+    let parsed
+    try {
+      parsed = new URL(target, window.location.href)
+    } catch (error) {
+      console.warn('Blocked navigation to an invalid URL:', target)
+      return
+    }
+    if (parsed.protocol !== 'https:') {
+      console.warn('Blocked navigation to a non-HTTPS URL:', parsed.href)
+      return
+    }
+    const anchor = document.createElement('a')
+    anchor.href = parsed.href
+    anchor.target = '_blank'
+    anchor.rel = 'noopener noreferrer'
+    document.body.appendChild(anchor)
+    anchor.click()
+    anchor.remove()
+  }
+
+  function setSvgMarkup(element, markup) {
+    const svgRoot = new DOMParser().parseFromString(markup, 'text/html').body.querySelector('svg')
+    if (svgRoot) element.replaceChildren(document.importNode(svgRoot, true))
+  }
 
   // ====== Auto-Width Style Injection ======
 
@@ -105,9 +133,16 @@
     document.head.appendChild(folderDownloadStyle)
   }
 
+  const DOWNLOAD_ALLOWED_HOSTS = new Set(['raw.githubusercontent.com'])
+
   async function downloadFile(url, fileName) {
     try {
-      const response = await fetch(url)
+      const safeUrl = new URL(url, window.location.href)
+      if (safeUrl.protocol !== 'https:' || !DOWNLOAD_ALLOWED_HOSTS.has(safeUrl.hostname)) {
+        throw new Error(`Refusing to download from untrusted origin: ${safeUrl.origin}`)
+      }
+      const response = await fetch(safeUrl.href)
+      if (!response.ok) throw new Error(`Download failed with HTTP status ${response.status}`)
       const blob = await response.blob()
       const link = document.createElement('a')
       link.href = window.URL.createObjectURL(blob)
@@ -136,7 +171,7 @@
         svg.addEventListener('click', (e) => {
           e.preventDefault()
           e.stopPropagation()
-          window.open(downloadUrl, '_blank')
+          openHttpsUrl(downloadUrl)
         })
       }
     })
@@ -176,70 +211,62 @@
 
   // ====== End folder & file downloader ======
 
-  function runFileButtons(copyPathButton) {
-    const url = new URL(window.location.href)
-    const { pathname } = url
-    const isFile = pathname.includes('/blob/')
+  function buildFileLinks(pathname) {
     const isFolder = pathname.includes('/tree/')
+    const isFile = pathname.includes('/blob/')
+    if (!isFolder && !isFile) return null
 
-    let link
-    let htmlPreviewLink = null
-    if (isFolder) {
-      const index = pathname.indexOf('/tree/')
-      const author = pathname.slice(1, index)
-      let rest = pathname.slice(index + 6)
-      const version = rest.slice(0, rest.indexOf('/'))
-      const filepath = rest.slice(rest.indexOf('/'))
-      link = `https://cdn.jsdelivr.net/gh/${author}@${version}${filepath}/`
-    } else if (isFile) {
-      const index = pathname.indexOf('/blob/')
-      const author = pathname.slice(1, index)
-      let rest = pathname.slice(index + 6)
-      const version = rest.slice(0, rest.indexOf('/'))
-      const filepath = rest.slice(rest.indexOf('/'))
-      link = `https://cdn.jsdelivr.net/gh/${author}@${version}${filepath}`
-      if (/\.html?$/i.test(filepath)) {
-        htmlPreviewLink = `https://htmlpreview.github.io/?https://raw.githubusercontent.com/${author}/${version}${filepath}`
-      }
-    } else {
+    const marker = isFolder ? '/tree/' : '/blob/'
+    const markerIndex = pathname.indexOf(marker)
+    const author = pathname.slice(1, markerIndex)
+    const rest = pathname.slice(markerIndex + marker.length)
+    const version = rest.slice(0, rest.indexOf('/'))
+    const filepath = rest.slice(rest.indexOf('/'))
+
+    const link = `https://cdn.jsdelivr.net/gh/${author}@${version}${filepath}${isFolder ? '/' : ''}`
+    const isHtmlFile = !isFolder && isFile && /\.html?$/i.test(filepath)
+    const htmlPreviewLink = isHtmlFile
+      ? `https://htmlpreview.github.io/?https://raw.githubusercontent.com/${author}/${version}${filepath}`
+      : null
+    return { link, htmlPreviewLink }
+  }
+
+  function ensureFileButton(copyPathButton, { label, svgMarkup, onClick }) {
+    const existingButton = document.querySelector(`button[aria-label="${label}"]`)
+    if (existingButton) {
+      existingButton.onclick = onClick
       return
     }
 
-    if (htmlPreviewLink) {
-      let previewButton = document.querySelector('button[aria-label="Preview HTML"]')
-      if (!previewButton) {
-        const copyPathButtonWrapper = copyPathButton.parentElement
-        const container = copyPathButtonWrapper.parentElement
-        const previewNode = copyPathButtonWrapper.cloneNode(true)
-        previewButton = previewNode.querySelector('button')
-        previewButton.setAttribute('title', 'Preview HTML')
-        previewButton.setAttribute('aria-label', 'Preview HTML')
-        previewButton.innerHTML = previewSvgMarkup
-        container.appendChild(previewNode)
-        Array.from(previewNode.children).forEach(child => child.getAttribute('title') !== 'Preview HTML' && previewNode.removeChild(child))
-      }
+    const wrapper = copyPathButton.parentElement
+    const container = wrapper.parentElement
+    const node = wrapper.cloneNode(true)
+    const button = node.querySelector('button')
+    button.setAttribute('title', label)
+    button.setAttribute('aria-label', label)
+    setSvgMarkup(button, svgMarkup)
+    container.appendChild(node)
+    Array.from(node.children).forEach(child => child.getAttribute('title') !== label && node.removeChild(child))
+    button.onclick = onClick
+  }
 
-      previewButton.onclick = () => {
-        window.open(htmlPreviewLink)
-      }
+  function runFileButtons(copyPathButton) {
+    const links = buildFileLinks(window.location.pathname)
+    if (!links) return
+
+    if (links.htmlPreviewLink) {
+      ensureFileButton(copyPathButton, {
+        label: 'Preview HTML',
+        svgMarkup: previewSvgMarkup,
+        onClick: () => openHttpsUrl(links.htmlPreviewLink)
+      })
     }
 
-    let actionButton = document.querySelector('button[aria-label="Open JsDelivr Link"]')
-    if (!actionButton) {
-      const copyPathButtonWrapper = copyPathButton.parentElement
-      const container = copyPathButtonWrapper.parentElement
-      const actionNode = copyPathButtonWrapper.cloneNode(true)
-      actionButton = actionNode.querySelector('button')
-      actionButton.setAttribute('title', 'Open JsDelivr Link')
-      actionButton.setAttribute('aria-label', 'Open JsDelivr Link')
-      actionButton.innerHTML = jsdelivrSvgMarkup
-      container.appendChild(actionNode)
-      Array.from(actionNode.children).forEach(child => child.getAttribute('title') !== 'Open JsDelivr Link' && actionNode.removeChild(child))
-    }
-
-    actionButton.onclick = () => {
-      window.open(link)
-    }
+    ensureFileButton(copyPathButton, {
+      label: 'Open JsDelivr Link',
+      svgMarkup: jsdelivrSvgMarkup,
+      onClick: () => openHttpsUrl(links.link)
+    })
   }
 
   // ====== Repo Header Buttons ======
