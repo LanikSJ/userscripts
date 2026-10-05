@@ -47,8 +47,10 @@ const VALID_NAVIGATION_ORIGINS = [
   'https://cdn.jsdelivr.net'
 ]
 
+const FORBIDDEN_URL_CHARS = ['<', '>', '"', "'"]
+
 function openHttpsUrl(target) {
-  if (typeof target !== 'string' || /[<>"']/.test(target)) {
+  if (typeof target !== 'string' || FORBIDDEN_URL_CHARS.some(char => target.includes(char))) {
     console.warn('Blocked navigation to an invalid target:', target)
     return
   }
@@ -153,26 +155,24 @@ function injectFolderDownloadStyle() {
 const DOWNLOAD_ALLOWED_HOSTS = ['raw.githubusercontent.com']
 
 async function downloadFile(fileInfo) {
+  if (!fileInfo || !fileInfo.url) return
+  const safeUrl = new URL(fileInfo.url, 'https://raw.githubusercontent.com')
+  if (safeUrl.protocol !== 'https:' || !DOWNLOAD_ALLOWED_HOSTS.includes(safeUrl.hostname)) {
+    console.error(`Refusing to download from untrusted origin: ${safeUrl.origin}`)
+    return
+  }
   try {
-    const safeUrl = new URL(fileInfo.url, 'https://raw.githubusercontent.com')
-    if (safeUrl.protocol !== 'https:') {
-      throw new Error(`Refusing to download non-HTTPS resource: ${safeUrl.href}`)
-    }
-    if (DOWNLOAD_ALLOWED_HOSTS.includes(safeUrl.hostname)) {
-      const response = await fetch(safeUrl.href)
-      if (!response.ok) throw new Error(`Download failed with HTTP status ${response.status}`)
-      const blob = await response.blob()
-      const link = document.createElement('a')
-      link.href = window.URL.createObjectURL(blob)
-      link.download = fileInfo.fileName
-      link.style.display = 'none'
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      window.URL.revokeObjectURL(link.href)
-    } else {
-      throw new Error(`Refusing to download from untrusted origin: ${safeUrl.origin}`)
-    }
+    const response = await fetch(safeUrl.href)
+    if (!response.ok) throw new Error(`Download failed with HTTP status ${response.status}`)
+    const blob = await response.blob()
+    const link = document.createElement('a')
+    link.href = window.URL.createObjectURL(blob)
+    link.download = fileInfo.fileName
+    link.style.display = 'none'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(link.href)
   } catch (error) {
     console.error('Download failed:', error)
   }
@@ -295,6 +295,7 @@ function runFileButtons(copyPathButton) {
 
 const HEADER_CONTAINER_ID = 'gek-header-buttons'
 const HEADER_SELECTOR = 'strong[itemprop="name"] a'
+const ALLOWED_API_HOSTS = ['api.github.com']
 
 function findHeaderInsertTarget(titleLink, titleComponent) {
   const mr1 = titleComponent ? titleComponent.querySelector('.mr-1') : null
@@ -307,22 +308,28 @@ function findHeaderInsertTarget(titleLink, titleComponent) {
   return (parentEl && parentEl.querySelector('.mr-1, .Label')) || titleLink
 }
 
-function createRepoSizeBadge(owner, repo) {
+function createRepoSizeBadge(repoInfo) {
   const sizeBadge = document.createElement('span')
   sizeBadge.textContent = 'loading...'
   sizeBadge.classList.add('Label')
   sizeBadge.style.fontSize = '11px'
   sizeBadge.style.fontWeight = '500'
 
-  fetch(`https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`)
-    .then(r => r.json())
-    .then(data => {
-      const kb = data.size || 0
-      if (kb >= 1048576) sizeBadge.textContent = `${(kb / 1048576).toFixed(2)} GB`
-      else if (kb >= 1024) sizeBadge.textContent = `${(kb / 1024).toFixed(1)} MB`
-      else sizeBadge.textContent = `${kb} KB`
-    })
-    .catch(() => { sizeBadge.textContent = 'n/a' })
+  const safeOwner = encodeURIComponent(repoInfo.owner)
+  const safeRepo = encodeURIComponent(repoInfo.repo)
+  const apiUrl = new URL(`https://api.github.com/repos/${safeOwner}/${safeRepo}`)
+
+  if (ALLOWED_API_HOSTS.includes(apiUrl.hostname)) {
+    fetch(apiUrl.href)
+      .then(r => r.json())
+      .then(data => {
+        const kb = data.size || 0
+        if (kb >= 1048576) sizeBadge.textContent = `${(kb / 1048576).toFixed(2)} GB`
+        else if (kb >= 1024) sizeBadge.textContent = `${(kb / 1024).toFixed(1)} MB`
+        else sizeBadge.textContent = `${kb} KB`
+      })
+      .catch(() => { sizeBadge.textContent = 'n/a' })
+  }
 
   return sizeBadge
 }
@@ -344,7 +351,7 @@ function createHeaderActionLink(href, title, iconUrl) {
   return link
 }
 
-function createHeaderContainer(owner, repo) {
+function createHeaderContainer(repoInfo) {
   const container = document.createElement('span')
   container.id = HEADER_CONTAINER_ID
   container.style.display = 'inline-flex'
@@ -353,11 +360,11 @@ function createHeaderContainer(owner, repo) {
   container.style.marginLeft = '8px'
   container.style.whiteSpace = 'nowrap'
 
-  container.appendChild(createRepoSizeBadge(owner, repo))
+  container.appendChild(createRepoSizeBadge(repoInfo))
 
   const pagesHref = (window.location.host === 'github.com' && window.location.href.includes('.html'))
     ? 'https://htmlpreview.github.io/?' + window.location.href
-    : `https://${owner}.github.io/${repo}`
+    : `https://${repoInfo.owner}.github.io/${repoInfo.repo}`
   container.appendChild(createHeaderActionLink(pagesHref, 'GitHub Pages', homepageIconUrl))
 
   const ogImage = document.querySelector('meta[property="og:image"]')
@@ -371,6 +378,7 @@ function addHeaderButtons() {
   const pathParts = window.location.pathname.split('/').filter(Boolean)
   if (pathParts.length !== 2) return
   const [owner, repo] = pathParts
+  const repoInfo = { owner, repo }
 
   const titleComponent = document.getElementById('repo-title-component')
   const titleLink = (titleComponent && titleComponent.querySelector('a[data-testid="repo-name-link"]'))
@@ -389,7 +397,7 @@ function addHeaderButtons() {
     titleParent.style.whiteSpace = 'nowrap'
   }
 
-  insertTarget.insertAdjacentElement('afterend', createHeaderContainer(owner, repo))
+  insertTarget.insertAdjacentElement('afterend', createHeaderContainer(repoInfo))
 }
 
 // ====== Unified Immediate Injection ======
