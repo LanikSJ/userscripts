@@ -3,7 +3,7 @@
 // @description        Enhanced Features: One-click access to repository homepage, repository cover and repository analysis; one-click intelligent repository analysis; one-click download of files and folders; one-click preview of HTML files; one-click browsing of repositories via JSDelivr.
 // @namespace          https://github.com/LanikSJ/github-enhancer-tools
 // @author             RunningCheese and LanikSJ
-// @version            1.5.5.261005
+// @version            1.5.6.261007
 // @match              https://github.com/*
 // @icon               https://t1.gstatic.cn/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://github.com
 // @license            MIT
@@ -36,8 +36,8 @@ const previewSvgMarkup = `<svg viewBox="0 0 24 24" width="16" height="16" fill="
     <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
   </svg>`
 
-const homepageIconUrl = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDE2IDE2Ij48cmVjdCB4PSIwLjc1IiB5PSIwLjc1IiB3aWR0aD0iMTQuNSIgaGVpZ2h0PSIxNC41IiByeD0iMyIgc3Ryb2tlPSIjMUYyMzI4IiBzdHJva2Utd2lkdGg9IjEiLz48cGF0aCBkPSJNMyA4bDUtNC41IDUgNC41IiBzdHJva2U9IiMxRjIzMjgiIHN0cm9rZS13aWR0aD0iMS4yIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNNC41IDcuNXY2aDN2LTMuNWgxdjMuNWgzdi02IiBzdHJva2U9IiMxRjIzMjgiIHN0cm9rZS13aWR0aD0iMS4yIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+'
-const coverIconUrl = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDE2IDE2Ij48cmVjdCB4PSIwLjc1IiB5PSIwLjc1IiB3aWR0aD0iMTQuNSIgaGVpZ2h0PSIxNC41IiByeD0iMyIgc3Ryb2tlPSIjMUYyMzI4IiBzdHJva2Utd2lkdGg9IjEiLz48Y2lyY2xlIGN4PSI1LjUiIGN5PSI1LjUiIHI9IjEuNCIgc3Ryb2tlPSIjMUYyMzI4IiBzdHJva2Utd2lkdGg9IjEiLz48cGF0aCBkPSJNMi41IDEyLjVsMy00IDIuNSAzIDItMi41IDMuNSA0IiBzdHJva2U9IiMxRjIzMjgiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHlsZT0ic3Ryb2tlLWxpbmVqb2luOnJvdW5kIi8+PC9zdmc+'
+const homepageSvgMarkup = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 16 16" style="display:block"><rect x="0.75" y="0.75" width="14.5" height="14.5" rx="3" stroke="currentColor" stroke-width="1"/><path d="M3 8l5-4.5 5 4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 7.5v6h3v-3.5h1v3.5h3v-6" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>`
+const coverSvgMarkup = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 16 16" style="display:block"><rect x="0.75" y="0.75" width="14.5" height="14.5" rx="3" stroke="currentColor" stroke-width="1"/><circle cx="5.5" cy="5.5" r="1.4" stroke="currentColor" stroke-width="1"/><path d="M2.5 12.5l3-4 2.5 3 2-2.5 3.5 4" stroke="currentColor" stroke-width="1" stroke-linecap="round" style="stroke-linejoin:round"/></svg>`
 
 // ====== Shared Safety Helpers ======
 
@@ -334,7 +334,7 @@ function createRepoSizeBadge(repoInfo) {
   return sizeBadge
 }
 
-function createHeaderActionLink(href, title, iconUrl) {
+function createHeaderActionLink(href, title, svgMarkup) {
   const link = document.createElement('a')
   link.href = href
   link.target = '_blank'
@@ -342,12 +342,8 @@ function createHeaderActionLink(href, title, iconUrl) {
   link.classList.add('Link', 'Link--muted')
   link.style.display = 'inline-flex'
   link.style.alignItems = 'center'
-  const img = document.createElement('img')
-  img.src = iconUrl
-  img.style.width = '18px'
-  img.style.height = '18px'
-  img.style.display = 'block'
-  link.appendChild(img)
+  link.style.color = 'inherit'
+  setSvgMarkup(link, svgMarkup)
   return link
 }
 
@@ -365,11 +361,11 @@ function createHeaderContainer(repoInfo) {
   const pagesHref = (window.location.host === 'github.com' && window.location.href.includes('.html'))
     ? 'https://htmlpreview.github.io/?' + window.location.href
     : `https://${repoInfo.owner}.github.io/${repoInfo.repo}`
-  container.appendChild(createHeaderActionLink(pagesHref, 'GitHub Pages', homepageIconUrl))
+  container.appendChild(createHeaderActionLink(pagesHref, 'GitHub Pages', homepageSvgMarkup))
 
   const ogImage = document.querySelector('meta[property="og:image"]')
   if (ogImage && ogImage.content) {
-    container.appendChild(createHeaderActionLink(ogImage.content, 'View cover image', coverIconUrl))
+    container.appendChild(createHeaderActionLink(ogImage.content, 'View cover image', coverSvgMarkup))
   }
   return container
 }

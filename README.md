@@ -33,7 +33,7 @@ and `@homepageURL` metadata so user script managers can detect and install updat
 
 | Script               | Current Version |
 | -------------------- | --------------- |
-| GitHub Enhancer      | `1.5.5.261005`  |
+| GitHub Enhancer      | `1.5.6.261007`  |
 | HTML5 Video Tools    | `2.2.2.260920`  |
 | Instacart Ad Remover | `72.0.0.260916` |
 | Paywall Bypass       | `2.0.6.260916`  |
@@ -79,7 +79,7 @@ and `@homepageURL` metadata so user script managers can detect and install updat
 
 A user script that adds one-click enhancements to GitHub repository pages: a repository size badge,
 homepage and cover-image links, file and folder downloads, HTML file previews, and JsDelivr
-browsing, plus an edge-to-edge wide page layout. Current version: `1.5.5.261005`.
+browsing, plus an edge-to-edge wide page layout. Current version: `1.5.6.261007`.
 
 ### ✨ GitHub Enhancer Features
 
