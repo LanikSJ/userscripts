@@ -121,7 +121,7 @@ browsing, plus an edge-to-edge wide page layout. Current version: `1.5.6.261007`
 ## 🎬 HTML5 Video Playing Tools
 
 Adds playback hotkeys to HTML5 video players across mainstream video and live streaming sites, with
-per-site UI integration. Current version: `2.2.2.260920`.
+per-site UI integration. Current version: `2.2.3.261007`.
 
 ### ✨ HTML5 Video Features
 
@@ -194,7 +194,7 @@ Notes: YouTube remaps some keys (`V` for speed and `E` for next frame); see the
 
 A user script that blocks sponsored content, promo carousels, and dynamically inserted ad placements across
 Instacart (both `.com` and `.ca`). Also available on
-[Greasy Fork](https://greasyfork.org/en/scripts/510324-instacart-ad-remover). Current version: `72.0.0.260916`.
+[Greasy Fork](https://greasyfork.org/en/scripts/510324-instacart-ad-remover). Current version: `72.0.1.261007`.
 
 **Note:** The script header includes `@downloadURL`, `@updateURL`, and `@homepageURL` metadata (pointing to GitHub),
 so your user script manager can check GitHub for updates automatically.
@@ -358,7 +358,7 @@ The script supports paywall bypass for hundreds of news websites across the glob
 
 ## 💬 phpBB Forum Helper
 
-A user script that enhances phpBB forums running the ProSilver style. Current version: `1.2.5.260915`.
+A user script that enhances phpBB forums running the ProSilver style. Current version: `1.2.6.261007`.
 
 **Note:** The script header now includes `@downloadURL`, `@updateURL`, and `@homepageURL` metadata, so your user
 script manager can check GitHub for updates automatically.
