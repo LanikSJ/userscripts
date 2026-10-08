@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HTML5 Video Playing Tools
 // @namespace    https://greasyfork.org/users/7036
-// @version      2.2.2.260920
+// @version      2.2.3.261007
 // @description  Enable hotkeys for HTML5 playback: video screenshot; enable/disable picture-in-picture; copy cached video; send any video to full screen or browser window size; fast forward, rewind, pause/play, volume, skip to next video, skip to previous or next frame, set playback speed. Supported sites: YouTube, TED, Twitch, Vimeo, Dailymotion, Odysee, Kick, PeerTube; custom sites can be added (any URL containing "play")
 // @downloadURL  https://raw.githubusercontent.com/LanikSJ/userscripts/main/html5-video-playing-tools.js
 // @updateURL    https://raw.githubusercontent.com/LanikSJ/userscripts/main/html5-video-playing-tools.js

@@ -93,6 +93,18 @@ userscripts contains personal browser userscripts for site enhancements and auto
   - this file had the wrong data from a totally different repository
   ```
 
+### Commit Message Delivery (MANDATORY)
+
+- Once all work is completed, always create a commit message with
+  a title and a description.
+- The title MUST be 72 characters or fewer.
+- The description has no width limit.
+- Verify the title length before presenting it:
+
+  ```bash
+  printf '%s' "<title>" | wc -c
+  ```
+
 #### Commit Types
 
 - **feat**: A new feature

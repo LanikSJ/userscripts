@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Instacart Ad Remover
 // @namespace    https://greasyfork.org/users/1354160
-// @version      72.0.0.260916
+// @version      72.0.1.261007
 // @description  Blocks those nasty Instacart ads on various pages, including in search, store home page, user home page, cart, etc. Also removes dynamically inserted promo blocks.
 // @downloadURL  https://raw.githubusercontent.com/LanikSJ/userscripts/main/instacart-ad-remover.js
 // @updateURL    https://raw.githubusercontent.com/LanikSJ/userscripts/main/instacart-ad-remover.js
