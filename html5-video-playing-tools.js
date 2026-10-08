@@ -20,6 +20,7 @@
 // @include      */play*
 // @include      *play/*
 // @exclude      https://www.dj92cc.net/dance/play/id/*
+// @icon         https://t1.gstatic.cn/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.youtube.com
 // @inject-into  content
 // @run-at       document-start
 // @require      https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js
