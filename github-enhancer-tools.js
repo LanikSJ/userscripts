@@ -3,7 +3,7 @@
 // @description        Enhanced Features: One-click access to repository homepage, repository cover and repository analysis; one-click intelligent repository analysis; one-click download of files and folders; one-click preview of HTML files; one-click browsing of repositories via JSDelivr.
 // @namespace          https://github.com/LanikSJ/github-enhancer-tools
 // @author             RunningCheese and LanikSJ
-// @version            1.5.6.261007
+// @version            1.5.7.261007
 // @match              https://github.com/*
 // @icon               https://t1.gstatic.cn/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://github.com
 // @license            MIT
@@ -96,9 +96,16 @@ function injectAutoWidthStyle() {
   const autoWidthStyle = document.createElement('style')
   autoWidthStyle.id = 'gek-auto-width-style'
   autoWidthStyle.textContent = `
-    /* Target Primer CSS Grid container directly */
+    /* Target Primer CSS Grid container directly (React CSS Modules + static Primer CSS + custom element) */
     body div[class*="PageLayout-module__container"],
+    body div[class*="PageLayout-"],
+    body .PageLayout,
+    body .PageLayout-wrapper,
+    body .PageLayout-columns,
     body page-layout {
+      --Layout-max-width: 100% !important;
+      --Layout-pane-width: 320px !important;
+      --Layout-template-columns: minmax(0, 1fr) 320px !important;
       grid-template-columns: minmax(0, 1fr) 320px !important;
       max-width: 100vw !important;
       width: 100% !important;
@@ -109,15 +116,56 @@ function injectAutoWidthStyle() {
     /* Prevent inner content blowout in grid column */
     body div[class*="PageLayout-module__main"],
     body div[class*="PageLayout-module__content"],
-    body div[class*="PageLayout-module__centerColumn"] {
+    body div[class*="PageLayout-module__centerColumn"],
+    body .PageLayout-content,
+    body .PageLayout-pane {
       min-width: 0 !important;
       max-width: 100% !important;
       width: 100% !important;
     }
 
+    /* Issue / PR discussion layout - legacy Primer Layout + app containers.
+       Issues use .Layout (not PageLayout-module) inside .container-xl, so they
+       were still capped at 1280px and never went full-width. */
+    .application-main,
+    #js-repo-pjax-container,
+    div[data-target="react-app.embeddedData"],
+    main {
+      max-width: 100% !important;
+      width: 100% !important;
+    }
+
+    body .Layout,
+    body div[data-component="PH_Layout"] {
+      --Layout-pane-width: 320px !important;
+      --Layout-template-columns: minmax(0, 1fr) 320px !important;
+      --Layout-max-width: 100% !important;
+      max-width: 100% !important;
+      width: 100% !important;
+      padding-left: 20px !important;
+      padding-right: 20px !important;
+    }
+
+    body .Layout-main,
+    body .Layout-content,
+    body #discussion_bucket,
+    body .discussion-timeline,
+    body .gh-header {
+      min-width: 0 !important;
+      max-width: 100% !important;
+      width: 100% !important;
+    }
+
+    body .Layout-sidebar,
+    body .Layout-pane {
+      width: 320px !important;
+      min-width: 320px !important;
+    }
+
     /* Expand legacy layout containers if present */
     .container-xl,
     .container-lg,
+    .container-md,
     .AppHeader-context,
     .repository-content {
       max-width: 100% !important;
