@@ -26,6 +26,7 @@
 // @match        *://newsgroup.xnview.com/*
 // @match        *://www.sublimetext.com/forum/*
 // @match        *://*.synthesiagame.com/forum/*
+// @icon         https://t1.gstatic.cn/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.phpbb.com
 // @grant        none
 // @noframes
 // @run-at       document-end

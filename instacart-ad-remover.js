@@ -10,6 +10,7 @@
 // @license      MIT
 // @match        https://*.instacart.ca/*
 // @match        https://*.instacart.com/*
+// @icon         https://t1.gstatic.cn/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.instacart.com
 // @grant        GM_addStyle
 // ==/UserScript==
 
