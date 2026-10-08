@@ -79,7 +79,7 @@ and `@homepageURL` metadata so user script managers can detect and install updat
 
 A user script that adds one-click enhancements to GitHub repository pages: a repository size badge,
 homepage and cover-image links, file and folder downloads, HTML file previews, and JsDelivr
-browsing, plus an edge-to-edge wide page layout. Current version: `1.5.7.261007`.
+browsing, plus an edge-to-edge wide page layout. Current version: `1.5.8.261007`.
 
 ### ✨ GitHub Enhancer Features
 
