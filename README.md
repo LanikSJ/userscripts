@@ -491,3 +491,13 @@ These scripts help maintain the quality of the userscript by:
 
 This script is intended for educational purposes and to access content that may be temporarily restricted.
 Please respect copyright and terms of service of content providers. Use at your own risk.
+
+
+## ⚙️ Skills Automation
+
+This repository maintains agent skills via `skills-lock.json`. The GitHub Actions
+workflow automatically updates the skills monthly and creates a pull request.
+
+- **Workflow**: `.github/workflows/skills-update.yml`
+- **Schedule**: Monthly on the 7th at 03:00 UTC
+- **Manual run**: `npx skills update`
